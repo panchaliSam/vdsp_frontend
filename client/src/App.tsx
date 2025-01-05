@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { Navbar, LoadingScreen, Footer } from "./components";
-import { Home, SignIn } from "./pages";
+import { Home, SignIn, SignUp } from "./pages";
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -29,8 +29,9 @@ const App: React.FC = () => {
 const MainApp: React.FC<{ loading: boolean }> = ({ loading }) => {
   const location = useLocation();
 
-  const showNavbar = location.pathname !== "/login";
-  const showFooter = location.pathname !== "/login";
+  const hidePaths = ["/signIn", "/signUp"];
+  const showNavbar = !hidePaths.includes(location.pathname);
+  const showFooter = !hidePaths.includes(location.pathname);
 
   return (
     <>
@@ -42,7 +43,8 @@ const MainApp: React.FC<{ loading: boolean }> = ({ loading }) => {
 
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<SignIn />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/signUp" element={<SignUp />} />
           </Routes>
 
           {showFooter && <Footer />}
