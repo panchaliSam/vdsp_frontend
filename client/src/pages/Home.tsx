@@ -5,7 +5,7 @@ const Home = (): JSX.Element => {
   return (
     <>
       {/* About Section */}
-      <section id="about" className="px-6 py-12 md:px-12 lg:px-24">
+      <section id="about" className="px-6 py-12 md:px-12 lg:px-24 my-40">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           {/* About Text */}
           <div>
