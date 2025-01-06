@@ -1,7 +1,9 @@
 import { Carousel } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 import HomeImge from "../assets/HomeImage.jpg";
 
 const Home = (): JSX.Element => {
+  const navigate = useNavigate();
   return (
     <>
       {/* About Section */}
@@ -42,10 +44,16 @@ const Home = (): JSX.Element => {
 
             {/* Buttons (Sign In and Sign Up) */}
             <div className="flex space-x-4 mt-8">
-              <button className="px-6 py-2 border border-white text-white bg-transparent rounded-md hover:bg-white hover:text-black transition duration-300">
+              <button
+                className="px-6 py-2 border border-white text-white bg-transparent rounded-md hover:bg-white hover:text-black transition duration-300"
+                onClick={() => navigate("/signIn")}
+              >
                 Sign In
               </button>
-              <button className="px-6 py-2 border border-white text-white bg-transparent rounded-md hover:bg-white hover:text-black transition duration-300">
+              <button
+                className="px-6 py-2 border border-white text-white bg-transparent rounded-md hover:bg-white hover:text-black transition duration-300"
+                onClick={() => navigate("/signUp")}
+              >
                 Sign Up
               </button>
             </div>
