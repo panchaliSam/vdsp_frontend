@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { Navbar, LoadingScreen, Footer } from "./components";
-import { Home } from "./pages";
+import { Home, SignIn, SignUp } from "./pages";
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -14,16 +20,34 @@ const App: React.FC = () => {
   }, []);
 
   return (
+    <Router>
+      <MainApp loading={loading} />
+    </Router>
+  );
+};
+
+const MainApp: React.FC<{ loading: boolean }> = ({ loading }) => {
+  const location = useLocation();
+
+  const hidePaths = ["/signIn", "/signUp"];
+  const showNavbar = !hidePaths.includes(location.pathname);
+  const showFooter = !hidePaths.includes(location.pathname);
+
+  return (
     <>
       {loading ? (
         <LoadingScreen />
       ) : (
         <div>
-          <Navbar />
-          <div className="my-40">
-            <Home />
-          </div>
-          <Footer />
+          {showNavbar && <Navbar />}
+
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/signUp" element={<SignUp />} />
+          </Routes>
+
+          {showFooter && <Footer />}
         </div>
       )}
     </>
