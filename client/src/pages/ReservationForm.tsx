@@ -1,7 +1,17 @@
 import { useState } from "react";
+import { InputField } from "../components/index";
+import {
+  EmailValidation,
+  NameValidation,
+  PhoneNumberValidation,
+} from "../utils/validations/index";
 
 const ReservationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -130,7 +140,7 @@ const ReservationForm = () => {
           <h6 className="font-light text-center mt-10 mb-2">
             <span className="block text-3l sm:text-4l md:text-5l text-white font-[Times_New_Roman]">
               <span>P E R S O N A L</span>
-              <span className="ml-10">I N F O</span>
+              <span className="ml-10">I N F O R M A T I O N</span>
             </span>
           </h6>
           <hr className="w-[80%] mx-auto border-t border-gray-500 mb-5" />
@@ -144,12 +154,14 @@ const ReservationForm = () => {
                 <span className="text-base font-extralight">IRST NAM</span>
                 <span className="text-lg font-light">E</span>
               </label>
-              <input
+              <InputField
+                label=""
                 type="text"
-                id="firstName"
-                className="shadow-sm bg-gray-50 border border-gray-300 !text-black text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-yellow-500 dark:focus:border-yellow-500 dark:shadow-sm-light"
-                placeholder="Enter first name"
-                required
+                placeholder="Enter your first name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                validationFn={NameValidation}
+                className="!text-white"
               />
             </div>
 
@@ -162,12 +174,14 @@ const ReservationForm = () => {
                 <span className="text-base font-extralight">AST NAM</span>
                 <span className="text-lg font-light">E</span>
               </label>
-              <input
-                type="email"
-                id="email"
-                className="shadow-sm bg-gray-50 border border-gray-300 !text-black text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-yellow-500 dark:focus:border-yellow-500 dark:shadow-sm-light"
-                placeholder="Enter last name"
-                required
+              <InputField
+                label=""
+                type="text"
+                placeholder="Enter your last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                validationFn={NameValidation}
+                className="!text-white"
               />
             </div>
           </div>
@@ -175,7 +189,7 @@ const ReservationForm = () => {
           <h6 className="font-light text-center mt-10 mb-2">
             <span className="block text-3l sm:text-4l md:text-5l text-white font-[Times_New_Roman]">
               <span>C O N T A C T</span>
-              <span className="ml-10">I N F O</span>
+              <span className="ml-10">I N F O R M A T I O N</span>
             </span>
           </h6>
           <hr className="w-[80%] mx-auto border-t border-gray-500 mb-5" />
@@ -189,12 +203,14 @@ const ReservationForm = () => {
                 <span className="text-base font-extralight">MAI</span>
                 <span className="text-lg font-light">L</span>
               </label>
-              <input
+              <InputField
+                label=""
                 type="email"
-                id="email"
-                className="shadow-sm bg-gray-50 border border-gray-300 !text-black text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-yellow-500 dark:focus:border-yellow-500 dark:shadow-sm-light"
-                placeholder="name@flowbite.com"
-                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                validationFn={EmailValidation}
+                className="!text-white"
               />
             </div>
 
@@ -207,12 +223,14 @@ const ReservationForm = () => {
                 <span className="text-base font-extralight">HONE NUMBE</span>
                 <span className="text-lg font-light">R</span>
               </label>
-              <input
-                type="text"
-                id="phone"
-                className="shadow-sm bg-gray-50 border border-gray-300 !text-black text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full max-w-md p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-yellow-500 dark:focus:border-yellow-500 dark:shadow-sm-light"
-                placeholder="Enter phone number"
-                required
+              <InputField
+                label=""
+                type="phoneno"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="Enter your phone number"
+                validationFn={PhoneNumberValidation}
+                className="!text-white"
               />
             </div>
           </div>
@@ -229,7 +247,7 @@ const ReservationForm = () => {
             </div>
             <label
               htmlFor="terms"
-              className="ms-2 text-sm font-medium text-white dark:text-gray-300"
+              className="ms-2 text-sm font-normal text-white dark:text-gray-300"
             >
               I agree with the{" "}
               <a
@@ -243,7 +261,7 @@ const ReservationForm = () => {
           <button
             type="button"
             onClick={handleNextStep}
-            className="text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center ml-36"
+            className="text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:outline-none font-normal rounded-lg text-sm px-5 py-2.5 text-center ml-36"
           >
             Next Step: Event Info
           </button>
