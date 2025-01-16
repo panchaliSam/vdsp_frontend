@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { InputField } from "../components/index";
+import {
+  InputField,
+  DropdownField,
+  TextAreaField,
+  DatePickerField,
+  AddressField,
+} from "../components/index";
 import {
   EmailValidation,
   NameValidation,
   PhoneNumberValidation,
+  AddressValidation,
 } from "../utils/validations/index";
 
 const ReservationForm = () => {
@@ -12,6 +19,26 @@ const ReservationForm = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
+  const [textValue, setTextValue] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [address, setAddress] = useState<string>("");
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.target.value);
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEventDate(e.target.value);
+  };
+
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextValue(e.target.value);
+  };
+
+  const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedValue(e.target.value);
+  };
 
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -270,41 +297,99 @@ const ReservationForm = () => {
 
       {currentStep === 2 && (
         <form>
-          <h3 className="mb-4 text-lg font-medium leading-none text-white dark:text-white">
-            Event Info
-          </h3>
-          <div className="grid gap-4 mb-4 sm:grid-cols-2">
-            <div>
+          <h6 className="font-light text-center mt-10 mb-2">
+            <span className="block text-3l sm:text-4l md:text-5l text-white font-[Times_New_Roman]">
+              <span>E V E N T</span>
+              <span className="ml-10">I N F O R M A T I O N</span>
+            </span>
+          </h6>
+          <hr className="w-[80%] mx-auto border-t border-gray-500 mb-5" />
+          <div className="mb-5 ml-36 flex items-start space-x-72">
+            <div className="w-full max-w-md">
               <label
-                htmlFor="event-date"
-                className="block mb-2 text-sm font-medium text-white dark:text-white"
+                htmlFor="text"
+                className="block mb-2 text-xs font-medium text-gray-200 dark:text-gray-500"
               >
-                Event Date
+                <span className="text-lg font-light">E</span>
+                <span className="text-base font-extralight">VENT TYP</span>
+                <span className="text-lg font-light">E</span>
               </label>
-              <input
-                type="date"
-                id="event-date"
-                className="bg-gray-50 border border-gray-300 text-white text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                required
+              <DropdownField
+                label=""
+                options={[
+                  { value: "option1", label: "Option 1" },
+                  { value: "option2", label: "Option 2" },
+                  { value: "option3", label: "Option 3" },
+                ]}
+                value={selectedValue}
+                onChange={handleDropdownChange}
+                placeholder="Select an option"
+                className="!text-white"
               />
             </div>
-            <div>
+
+            <div className="w-full max-w-md">
               <label
-                htmlFor="event-type"
-                className="block mb-2 text-sm font-medium text-white dark:text-white"
+                htmlFor="textfield"
+                className="block mb-2 text-xs font-medium text-gray-200 dark:text-gray-500"
               >
-                Event Type
+                <span className="text-lg font-light">I</span>
+                <span className="text-base font-extralight">
+                  f Other Type It
+                </span>
               </label>
-              <select
-                id="event-type"
-                className="bg-gray-50 border border-gray-300 text-white text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                required
+              <TextAreaField
+                label=""
+                value={textValue}
+                onChange={handleTextAreaChange}
+                placeholder="Type your message here..."
+                rows={6}
+                maxLength={500}
+                className="text-slate-700"
+              />
+            </div>
+          </div>
+          <div className="mb-5 ml-36 flex items-start space-x-72">
+            <div className="w-full max-w-md">
+              <label
+                htmlFor="text"
+                className="block mb-2 text-xs font-medium text-gray-200 dark:text-white"
               >
-                <option value="wedding">Wedding</option>
-                <option value="birthday">Birthday</option>
-                <option value="corporate">Corporate</option>
-                <option value="portrait">Portrait</option>
-              </select>
+                <span className="text-lg font-light">E</span>
+                <span className="text-base font-extralight">VENT DAT</span>
+                <span className="text-lg font-light">E</span>
+              </label>
+              <DatePickerField
+                label=""
+                value={eventDate}
+                onChange={handleDateChange}
+                placeholder="MM/DD/YYYY"
+                minDate="2025-01-01"
+                maxDate="2025-12-31"
+                className="!text-white"
+              />
+            </div>
+            <div className="w-full max-w-md">
+              <label
+                htmlFor="text"
+                className="block mb-2 text-xs font-medium text-gray-200 dark:text-white"
+              >
+                <span className="text-lg font-light">A</span>
+                <span className="text-base font-extralight">DDRES</span>
+                <span className="text-lg font-light">S</span>
+              </label>
+              <AddressField
+                label=""
+                value={address}
+                onChange={handleAddressChange}
+                placeholder="Enter your full address"
+                validationFn={(value) =>
+                  value.length > 10
+                    ? null
+                    : "Address must be at least 10 characters."
+                }
+                className="!text-white"
+              />
             </div>
           </div>
           <div className="flex justify-between">
