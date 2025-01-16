@@ -1,19 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { InputField } from "../components/index";
-import { EmailValidation } from "../utils/validations/index";
+import {
+  EmailValidation,
+  PasswordValidation,
+} from "../utils/validations/index";
 
 const SignIn = (): JSX.Element => {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate("/");
   };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
+  };
+
+  const handleSignUpClick = () => {
+    navigate("/signUp");
   };
 
   return (
@@ -63,13 +71,13 @@ const SignIn = (): JSX.Element => {
           </div>
 
           <div className="w-full max-w-sm min-w-[200px] relative">
-            <label className="block mb-2 text-sm text-slate-600">
-              Password
-            </label>
-            <input
+            <InputField
+              label="Password"
               type={passwordVisible ? "text" : "password"}
-              className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-2 py-2 pr-10 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-              placeholder="Your Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              validationFn={PasswordValidation}
             />
             <button
               type="button"
@@ -152,8 +160,12 @@ const SignIn = (): JSX.Element => {
           <p className="flex justify-center mt-6 text-sm text-slate-600">
             Don&apos;t have an account?
             <a
-              href="#signup"
+              href="#signUp"
               className="ml-1 text-sm font-semibold text-slate-700 underline"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSignUpClick();
+              }}
             >
               Sign up
             </a>
