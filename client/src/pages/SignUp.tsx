@@ -1,19 +1,42 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { InputField } from "../components/index";
-import { EmailValidation } from "../utils/validations/index";
+import {
+  EmailValidation,
+  PasswordValidation,
+  ConfirmPasswordValidation,
+} from "../utils/validations/index";
 
 const SignUp = (): JSX.Element => {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSignUp = () => {
+    const confirmPasswordError = ConfirmPasswordValidation(
+      password,
+      confirmPassword
+    );
+
+    if (confirmPasswordError) {
+      setError(confirmPasswordError);
+      return;
+    }
+  };
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate("/");
   };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
+  };
+
+  const handleSignInClick = () => {
+    navigate("/signIn");
   };
 
   return (
@@ -65,13 +88,13 @@ const SignUp = (): JSX.Element => {
 
           {/* Password Input */}
           <div className="w-full max-w-sm min-w-[200px] relative">
-            <label className="block mb-2 text-sm text-slate-600">
-              Password
-            </label>
-            <input
+            <InputField
+              label="Password"
               type={passwordVisible ? "text" : "password"}
-              className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 pr-10 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-              placeholder="Your Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              validationFn={PasswordValidation}
             />
             <button
               type="button"
@@ -111,14 +134,14 @@ const SignUp = (): JSX.Element => {
 
           {/* Confirm Password Input */}
           <div className="w-full max-w-sm min-w-[200px] relative">
-            <label className="block mb-2 text-sm text-slate-600">
-              Confirm Password
-            </label>
-            <input
+            <InputField
+              label="Confirm Password"
               type={passwordVisible ? "text" : "password"}
-              className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 pr-10 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm your password"
             />
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
             <button
               type="button"
               onClick={togglePasswordVisibility}
@@ -159,9 +182,23 @@ const SignUp = (): JSX.Element => {
             <button
               className="w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
               type="button"
+              onClick={handleSignUp}
             >
               Sign Up
             </button>
+            <p className="flex justify-center mt-6 text-sm text-slate-600">
+              Have an account?
+              <a
+                href="#signIn"
+                className="ml-1 text-sm font-semibold text-slate-700 underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSignInClick();
+                }}
+              >
+                Sign In
+              </a>
+            </p>
           </div>
         </div>
       </div>
