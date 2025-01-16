@@ -392,6 +392,30 @@ const ReservationForm = () => {
               />
             </div>
           </div>
+          <div className="mb-5 ml-36 flex items-start space-x-72">
+            <div className="w-full max-w-md">
+              <label
+                htmlFor="text"
+                className="block mb-2 text-xs font-medium text-gray-200 dark:text-gray-500"
+              >
+                <span className="text-lg font-light">P</span>
+                <span className="text-base font-extralight">ACKAG</span>
+                <span className="text-lg font-light">E</span>
+              </label>
+              <DropdownField
+                label=""
+                options={[
+                  { value: "option1", label: "Option 1" },
+                  { value: "option2", label: "Option 2" },
+                  { value: "option3", label: "Option 3" },
+                ]}
+                value={selectedValue}
+                onChange={handleDropdownChange}
+                placeholder="Select an option"
+                className="!text-white"
+              />
+            </div>
+          </div>
           <div className="flex justify-between">
             <button
               type="button"
