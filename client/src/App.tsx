@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { Navbar, LoadingScreen, Footer } from "./components";
-import { Home, SignIn, SignUp, ReservationForm } from "./pages";
+import { Home, SignIn, SignUp, ReservationForm, PackagesPage } from "./pages";
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ const App: React.FC = () => {
 const MainApp: React.FC<{ loading: boolean }> = ({ loading }) => {
   const location = useLocation();
 
-  const hidePaths = ["/signIn", "/signUp", "/reservation"];
+  const hidePaths = ["/signIn", "/signUp", "/reservation", "/packages"];
   const showNavbar = !hidePaths.includes(location.pathname);
   const showFooter = !hidePaths.includes(location.pathname);
 
@@ -46,6 +46,7 @@ const MainApp: React.FC<{ loading: boolean }> = ({ loading }) => {
             <Route path="/signIn" element={<SignIn />} />
             <Route path="/signUp" element={<SignUp />} />
             <Route path="/reservation" element={<ReservationForm />} />
+            <Route path="/packages" element={<PackagesPage />} />
           </Routes>
 
           {showFooter && <Footer />}
