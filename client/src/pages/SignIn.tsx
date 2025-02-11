@@ -5,12 +5,36 @@ import {
   EmailValidation,
   PasswordValidation,
 } from "../utils/validations/index";
+import { UserAuthentication } from "../utils/Logic/index";
 
 const SignIn = (): JSX.Element => {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null); 
+
+  const handleSignIn = async () => {
+    const emailError = EmailValidation(email);
+    const passwordError = PasswordValidation(password);
+
+    if (emailError || passwordError) {
+      setError(emailError || passwordError);
+      return;
+    }
+    try {
+      const response = await UserAuthentication.logIn(email, password);
+      if (response) {
+        console.log("SignIn Successful", response);
+        navigate("/dashboard"); // Navigate to dashboard or another route
+      } else {
+        setError("Failed to sign in. Please check your credentials.");
+      }
+    } catch (err) {
+      console.error("SignIn Error:", err);
+      setError("An unexpected error occurred.");
+    }
+  };
 
   const handleBackClick = () => {
     navigate("/");
@@ -154,9 +178,11 @@ const SignIn = (): JSX.Element => {
           <button
             className="w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             type="button"
+            onClick={handleSignIn}
           >
             Sign In
           </button>
+          {error && <p className="text-red-500 mt-4">{error}</p>}
           <p className="flex justify-center mt-6 text-sm text-slate-600">
             Don&apos;t have an account?
             <a

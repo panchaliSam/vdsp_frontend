@@ -383,11 +383,7 @@ const ReservationForm = () => {
                 value={address}
                 onChange={handleAddressChange}
                 placeholder="Enter your full address"
-                validationFn={(value) =>
-                  value.length > 10
-                    ? null
-                    : "Address must be at least 10 characters."
-                }
+                validationFn={AddressValidation}
                 className="!text-white"
               />
             </div>
