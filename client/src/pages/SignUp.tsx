@@ -6,6 +6,8 @@ import {
   PasswordValidation,
   ConfirmPasswordValidation,
 } from "../utils/validations/index";
+import { UserAuthentication } from "../utils/Logic/UserAuthenticationLogic";
+import { UserApi } from "../utils/api/index";
 
 const SignUp = (): JSX.Element => {
   const navigate = useNavigate();
@@ -13,17 +15,37 @@ const SignUp = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
+    const emailError = EmailValidation(email);
+    const passwordError = PasswordValidation(password);
     const confirmPasswordError = ConfirmPasswordValidation(
       password,
       confirmPassword
     );
 
-    if (confirmPasswordError) {
-      setError(confirmPasswordError);
+    if (emailError || passwordError || confirmPasswordError) {
+      setError(emailError || passwordError || confirmPasswordError);
       return;
+    }
+
+    try {
+      const response = await UserAuthentication.signUp(email, password);
+      if (response) {
+        const payload = {
+          ...response,
+          userToken: response.token,
+        };
+        await UserApi.storeUser(payload);
+        console.log("SignUp Successful", response);
+        navigate("/signIn");
+      } else {
+        setError("Failed to create an account. Try again.");
+      }
+    } catch (err) {
+      console.error("SignUp Error:", err);
+      setError("An unexpected error occurred.");
     }
   };
 
