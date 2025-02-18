@@ -1,2 +1,2 @@
-export { packageApi } from "./packageApi";
+export { PackageApi } from "./PackageApi";
 export { UserApi } from "./UserApi";
