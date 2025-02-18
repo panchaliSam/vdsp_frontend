@@ -7,7 +7,7 @@ import {
   ConfirmPasswordValidation,
 } from "../utils/validations/index";
 import { UserAuthentication } from "../utils/Logic/UserAuthenticationLogic";
-import { UserApi } from "../utils/api/index";
+import { UserApi } from "../utils/api";
 
 const SignUp = (): JSX.Element => {
   const navigate = useNavigate();

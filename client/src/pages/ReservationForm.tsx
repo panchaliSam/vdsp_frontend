@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   InputField,
   DropdownField,
@@ -12,6 +12,7 @@ import {
   PhoneNumberValidation,
   AddressValidation,
 } from "../utils/validations/index";
+import { PackageApi } from "../utils/api";
 
 const ReservationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -23,6 +24,28 @@ const ReservationForm = () => {
   const [textValue, setTextValue] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [address, setAddress] = useState<string>("");
+  const [packageDropdownOptions, setPackageDropdownOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedPackageValue, setSelectedPackageValue] = useState<string>("");
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const packages = await PackageApi.getAllPackages();
+
+        const options = packages.map((pkg) => ({
+          value: pkg.packageId.toString(),
+          label: `${pkg.packageName}, Rs.${pkg.packagePrice}, ${pkg.noOfPhotos}`,
+        }));
+        setPackageDropdownOptions(options);
+      } catch (error) {
+        console.error("Error fetching packages:", error);
+      }
+    };
+
+    fetchPackages();
+  }, []);
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
@@ -50,6 +73,12 @@ const ReservationForm = () => {
 
   const handleStepClick = (step: number) => {
     setCurrentStep(step);
+  };
+
+  const handlePackageDropdownChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedPackageValue(e.target.value);
   };
 
   return (
@@ -400,14 +429,10 @@ const ReservationForm = () => {
               </label>
               <DropdownField
                 label=""
-                options={[
-                  { value: "option1", label: "Option 1" },
-                  { value: "option2", label: "Option 2" },
-                  { value: "option3", label: "Option 3" },
-                ]}
-                value={selectedValue}
-                onChange={handleDropdownChange}
-                placeholder="Select an option"
+                options={packageDropdownOptions}
+                value={selectedPackageValue}
+                onChange={handlePackageDropdownChange}
+                placeholder="Select a package"
                 className="!text-white"
               />
             </div>
