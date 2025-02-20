@@ -1,73 +1,93 @@
-# vdsp_Backend
+# vdsp_Frontend
 
-**Vidura De Silva Photography (vdsp)** is a comprehensive photographic management system designed to streamline event reservations, team allocations, and payment processing. This backend serves as the backbone of the system, ensuring smooth operations for both users and staff members.
+**Vidura De Silva Photography (vdsp)** frontend is a modern and responsive interface for the photographic management system. Built with React, Vite, and TypeScript, it ensures a fast and scalable user experience.
 
 ## Features
 
-- **Event Reservations:** Users can book events with ease through the system.
-- **Team Allocation:** Staff members can efficiently allocate teams to reserved events.
-- **Payment Processing:** Integrated with PayHere sandbox payment gateway to facilitate secure and seamless transactions.
-- **User Authentication:** Firebase authentication for secure and reliable user management.
+- **Modern UI Framework:** Built using Tailwind CSS for highly customizable and responsive designs.
+- **User Authentication:** Integrated Firebase Authentication for secure and efficient user management.
+- **Code Organization:**
+  - **Components:** Reusable UI components.
+  - **Pages:** Views for different routes in the application.
+  - **Utils:** Utility functions for validation and API integration.
+- **Efficient Code Management:** Uses `index.tsx` files in each folder for streamlined imports and exports.
 
 ## Technology Stack
 
-### Backend Framework:
-- **.NET 9 ASP.NET Core**
-- **Entity Framework** for ORM (Object-Relational Mapping)
+### Frontend Framework:
+- **React** with **Vite** for a fast development experience.
+- **TypeScript** for type safety and maintainable code.
 
-### Database:
-- **MySQL** for structured data storage
+### Styling:
+- **Tailwind CSS** for utility-first styling.
 
 ### Authentication:
-- **Firebase Authentication**
+- **Firebase Authentication** for login and user management.
 
-### Payment Gateway:
-- **PayHere Sandbox**
+## Project Structure
 
-### Architecture:
-- **Clean Architecture Design**
-
-## System Architecture
-The backend follows a modular and scalable clean architecture approach, ensuring separation of concerns and ease of maintenance. Key layers include:
-
-1. **Presentation Layer:** Handles incoming API requests.
-2. **Application Layer:** Contains business logic and use case implementations.
-3. **Domain Layer:** Core system abstractions and domain models.
-4. **Infrastructure Layer:** Manages database and external services like Firebase and PayHere integrations.
+```
+vdsp_frontend/
+|-- src/
+|   |-- components/     # Reusable UI components
+|   |   |-- index.tsx   # Exports all components in this folder
+|   |-- pages/          # Views for application routes
+|   |   |-- index.tsx   # Exports all pages in this folder
+|   |-- utils/          # Utility functions (validation, API calls)
+|   |   |-- index.tsx   # Exports all utilities in this folder
+|   |-- App.tsx         # Main application component
+|   |-- main.tsx        # Entry point for the application
+|-- public/             # Static assets
+|-- tailwind.config.js  # Tailwind CSS configuration
+|-- vite.config.ts      # Vite configuration
+```
 
 ## Installation and Setup
 
 ### Prerequisites:
-- Install **.NET 9 SDK**.
-- Set up **MySQL** server.
-- Configure **Firebase** project for authentication.
+- Install **Node.js** (v16 or later).
+- Set up a **Firebase** project for authentication.
 
 ### Steps:
 1. Clone the repository:
    ```bash
    git clone <repository_url>
-   cd vdsp_Backend
+   cd vdsp_frontend
    ```
-2. Configure the application settings:
-   - Update `appsettings.json` with:
-     - Database connection string
-     - Firebase configuration
-     - PayHere API keys
-3. Restore dependencies:
+2. Install dependencies:
    ```bash
-   dotnet restore
+   npm install
    ```
-4. Run database migrations:
+3. Configure environment variables:
+   - Create a `.env` file in the root directory.
+   - Add your Firebase configuration:
+     ```env
+     VITE_FIREBASE_API_KEY=<your-api-key>
+     VITE_FIREBASE_AUTH_DOMAIN=<your-auth-domain>
+     VITE_FIREBASE_PROJECT_ID=<your-project-id>
+     ```
+4. Start the development server:
    ```bash
-   dotnet ef database update
+   npm run dev
    ```
-5. Start the backend server:
+5. Build for production:
    ```bash
-   dotnet run
+   npm run build
    ```
 
-## API Endpoints
+## Key Features
 
+### Components:
+- **Reusable and Modular Design:** Components are designed to be reusable across the application.
+- **Centralized Exports:** Each folder includes an `index.tsx` file for exporting all components, simplifying imports.
+
+### Pages:
+- **Dedicated Views:** Each page represents a route in the application.
+- **Dynamic Navigation:** Easily extendable for new routes and views.
+
+### Utilities:
+- **Validation Functions:** Includes common validation utilities for forms and user input.
+- **API Integration:** Utility functions for interacting with backend APIs.
 
 ## Contribution Guidelines
 Contributions are welcome! Follow these steps to contribute:
