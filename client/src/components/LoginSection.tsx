@@ -27,12 +27,10 @@ const LoginSection: React.FC = () => {
     const userData: LoginPayload = { email, password };
 
     try {
-      const response: TokenResponse = await login(userData); // Call the login API function
+      const response: TokenResponse = await login(userData);
       if (response?.accessToken) {
         alert("Login successful!");
-        // Optionally, you could store the tokens or user details in localStorage or state for further use.
-        // For example: localStorage.setItem('accessToken', response.accessToken);
-        navigate("/home"); // Redirect to home page after successful login
+        navigate("/home");
       }
     } catch (error) {
       setError("Invalid email or password. Please try again.");
