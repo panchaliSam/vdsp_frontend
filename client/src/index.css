@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: "Urbanist", sans-serif;
+  }
+}
+
+@layer components {
+  .font-urbanist {
+    font-family: "Urbanist", sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-urbanist {
+    font-family: "Urbanist", sans-serif;
+  }
+}
