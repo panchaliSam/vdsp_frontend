@@ -6,6 +6,10 @@ import Logo from "@app_assets/logo/svg/logo-no-background.svg";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { registerUser } from "@app_api/User.API";
+import { validateEmail } from "@app_helper/emailValidation";
+import { validatePasswordStrength } from "@app_helper/passwordStrengthValidation";
+import { capitalizeName } from "@app_helper/capitalizeName";
+import { validatePhoneNumber } from "@app_helper/phoneNumberValidation";
 
 type Role = "ROLE_CUSTOMER" | "ROLE_ADMIN" | "ROLE_STAFF";
 
@@ -19,7 +23,7 @@ const RegisterSection: React.FC = () => {
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState<Role>("ROLE_CUSTOMER");
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
 
   const navigate = useNavigate();
 
@@ -33,18 +37,20 @@ const RegisterSection: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     // Check if passwords match
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        confirmPassword: "Passwords do not match.",
+      }));
       return;
     }
 
     // Prepare user data for registration
     const userData = {
-      firstName,
-      lastName,
+      firstName: capitalizeName(firstName),
+      lastName: capitalizeName(lastName),
       email,
       password,
       phoneNumber,
@@ -56,7 +62,45 @@ const RegisterSection: React.FC = () => {
       alert("Registration successful!");
       navigate("/login");
     } catch (apiError: any) {
-      setError(apiError.message || "Registration failed. Please try again.");
+      setErrors({
+        apiError: apiError.message || "Registration failed. Please try again.",
+      });
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    const value = e.target.value;
+    if (field === "email") {
+      setEmail(value);
+      const emailError = validateEmail(value);
+      setErrors((prevErrors) => ({ ...prevErrors, email: emailError }));
+    } else if (field === "password") {
+      setPassword(value);
+      const passwordError = validatePasswordStrength(value);
+      setErrors((prevErrors) => ({ ...prevErrors, password: passwordError }));
+    } else if (field === "confirmPassword") {
+      setConfirmPassword(value);
+      if (value !== password) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          confirmPassword: "Passwords do not match.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, confirmPassword: "" }));
+      }
+    } else if (field === "phoneNumber") {
+      setPhoneNumber(value);
+      const phoneError = validatePhoneNumber(value);
+      setErrors((prevErrors) => ({ ...prevErrors, phoneNumber: phoneError }));
+    } else if (field === "firstName") {
+      setFirstName(value);
+      setFirstName(capitalizeName(value));
+    } else if (field === "lastName") {
+      setLastName(value);
+      setLastName(capitalizeName(value));
     }
   };
 
@@ -76,7 +120,7 @@ const RegisterSection: React.FC = () => {
           type="text"
           placeholder="First Name"
           value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+          onChange={(e) => handleChange(e, "firstName")}
           required
         />
         <input
@@ -84,7 +128,7 @@ const RegisterSection: React.FC = () => {
           type="text"
           placeholder="Last Name"
           value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
+          onChange={(e) => handleChange(e, "lastName")}
           required
         />
         <input
@@ -92,18 +136,22 @@ const RegisterSection: React.FC = () => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => handleChange(e, "email")}
           required
         />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         <div className="relative">
           <input
             className="p-3 w-full border border-white rounded-md text-white bg-transparent focus:outline-none focus:ring-2 focus:ring-white pr-12"
             type={passwordVisible ? "text" : "password"}
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => handleChange(e, "password")}
             required
           />
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password}</p>
+          )}
           <button
             type="button"
             aria-label={passwordVisible ? "Hide password" : "Show password"}
@@ -119,9 +167,12 @@ const RegisterSection: React.FC = () => {
             type={confirmPasswordVisible ? "text" : "password"}
             placeholder="Confirm Password"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => handleChange(e, "confirmPassword")}
             required
           />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+          )}
           <button
             type="button"
             aria-label={
@@ -144,9 +195,12 @@ const RegisterSection: React.FC = () => {
           type="text"
           placeholder="Phone Number"
           value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          onChange={(e) => handleChange(e, "phoneNumber")}
           required
         />
+        {errors.phoneNumber && (
+          <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+        )}
 
         {/* Role Dropdown */}
         <select
@@ -160,7 +214,6 @@ const RegisterSection: React.FC = () => {
           <option value="ROLE_STAFF">Staff</option>
         </select>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
         <button
           type="submit"
           className="p-3 bg-white text-black border border-white rounded-md transition duration-300"
