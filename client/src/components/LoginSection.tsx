@@ -28,11 +28,12 @@ const LoginSection: React.FC = () => {
 
     try {
       const response: TokenResponse = await login(userData);
-      if (response?.accessToken) {
+      if (response?.access_token) {
         alert("Login successful!");
         navigate("/home");
       }
     } catch (error) {
+      console.error("Login error:", error);
       setError("Invalid email or password. Please try again.");
     }
   };

@@ -1,6 +1,6 @@
 export interface TokenResponse {
-  accessToken: string;
-  refreshToken: string;
+  access_token: string;
+  refresh_token: string;
   userDetails: {
     id: string;
     email: string;

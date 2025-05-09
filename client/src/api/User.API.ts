@@ -26,6 +26,39 @@ export const login = async (userData: LoginPayload): Promise<TokenResponse> => {
   }
 };
 
+// Logout API
+export const logout = async (refreshToken: string): Promise<string> => {
+  try {
+    const response = await axios.post(`${API_URL}/users/logout`, {
+      refresh_token: refreshToken,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error("Logout failed. Please try again later.");
+  }
+};
+
+// Refresh Token API
+export const refreshToken = async (
+  refreshToken: string,
+  accessToken: string
+): Promise<string> => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/users/refresh`,
+      { refresh_token: refreshToken },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to refresh token. Please try again later.");
+  }
+};
+
 // Get All Users API (Admin only)
 export const getAllUsers = async (): Promise<UserDto[]> => {
   try {
