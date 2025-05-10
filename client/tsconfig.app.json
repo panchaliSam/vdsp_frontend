@@ -34,14 +34,14 @@
       "@app_helper/*": ["src/helper/*"],
       "@app_hooks/*": ["src/hooks/*"],
       "@app_pages/*": ["src/pages/*"],
-      "@app_redux/*": ["src/redux/*"],
       "@app_routes/*": ["src/routes/*"],
       "@app_services/*": ["src/services/*"],
       "@app_theme/*": ["src/theme/*"],
       "@app_utils/*": ["src/utils/*"],
       "@app_interfaces/*": ["src/interfaces/*"],
       "@app_api/*": ["src/api/*"],
-      "@app_auth/*": ["src/auth/*"]
+      "@app_auth/*": ["src/auth/*"],
+      "@app_context/*": ["src/context/*"]
     }
   },
   "include": ["src"]

@@ -8,6 +8,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import type { LoginPayload } from "@app_interfaces/User/LoginPayload";
 import type { TokenResponse } from "@app_interfaces/User/TokenResponse";
+import type { Role } from "@app_interfaces/User/UserDto";
+import { useAuth } from "@app_context/AuthContext";
 
 const LoginSection: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -15,6 +17,8 @@ const LoginSection: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const { login: authLogin } = useAuth();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
@@ -30,7 +34,33 @@ const LoginSection: React.FC = () => {
       const response: TokenResponse = await login(userData);
       if (response?.access_token) {
         alert("Login successful!");
-        navigate("/home");
+
+        if (
+          ["ROLE_ADMIN", "ROLE_STAFF", "ROLE_CUSTOMER"].includes(
+            response.userDetails.role
+          )
+        ) {
+          const userRole: Role = response.userDetails.role as Role;
+
+          // Set the user role in the AuthContext
+          authLogin(userRole);
+
+          switch (userRole) {
+            case "ROLE_ADMIN":
+              navigate("/admin");
+              break;
+            case "ROLE_STAFF":
+              navigate("/staff");
+              break;
+            case "ROLE_CUSTOMER":
+              navigate("/customer");
+              break;
+            default:
+              setError("Unknown role. Please contact support.");
+          }
+        } else {
+          setError("Invalid role. Please contact support.");
+        }
       }
     } catch (error) {
       console.error("Login error:", error);
