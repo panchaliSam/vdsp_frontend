@@ -6,10 +6,10 @@ import Logo from "@app_assets/logo/svg/logo-no-background.svg";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { registerUser } from "@app_api/User.API";
-import { validateEmail } from "@app_helper/emailValidation";
-import { validatePasswordStrength } from "@app_helper/passwordStrengthValidation";
-import { capitalizeName } from "@app_helper/capitalizeName";
-import { validatePhoneNumber } from "@app_helper/phoneNumberValidation";
+import { validateEmail } from "@app_helper/validations/emailValidation";
+import { validatePasswordStrength } from "@app_helper/validations/passwordStrengthValidation";
+import { capitalizeName } from "@app_helper/validations/capitalizeName";
+import { validatePhoneNumber } from "@app_helper/validations/phoneNumberValidation";
 
 type Role = "ROLE_CUSTOMER" | "ROLE_ADMIN" | "ROLE_STAFF";
 
