@@ -3,6 +3,12 @@ import { API_URL } from "./ApiURL";
 import type { LoginPayload } from "@app_interfaces/User/LoginPayload";
 import type { TokenResponse } from "@app_interfaces/User/TokenResponse";
 import type { UserDto } from "@app_interfaces/User/UserDto";
+import {
+  getRefreshToken,
+  setTokens,
+  clearTokens,
+} from "@app_api/helper/TokenHelper";
+import { getAuthHeaders } from "@app_api/helper/AuthHelper";
 
 // Register User API
 export const registerUser = async (userData: UserDto): Promise<UserDto> => {
@@ -10,6 +16,7 @@ export const registerUser = async (userData: UserDto): Promise<UserDto> => {
     const response = await axios.post(`${API_URL}/users/register`, userData);
     return response.data;
   } catch (error) {
+    console.error(error);
     throw new Error("Registration failed. Please try again later.");
   }
 };
@@ -18,53 +25,72 @@ export const registerUser = async (userData: UserDto): Promise<UserDto> => {
 export const login = async (userData: LoginPayload): Promise<TokenResponse> => {
   try {
     const response = await axios.post(`${API_URL}/users/login`, userData);
+    const { access_token, refresh_token } = response.data;
+    setTokens(access_token, refresh_token);
     return response.data;
   } catch (error) {
-    throw new Error(
-      "Login failed. Please check your credentials or try again later."
-    );
+    console.error(error);
+    throw new Error("Login failed. Please check your credentials.");
   }
 };
 
 // Logout API
-export const logout = async (refreshToken: string): Promise<string> => {
+export const logout = async (): Promise<void> => {
   try {
-    const response = await axios.post(`${API_URL}/users/logout`, {
-      refresh_token: refreshToken,
-    });
-    return response.data;
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) throw new Error("No refresh token found.");
+
+    await axios.post(
+      `${API_URL}/users/logout`,
+      { refresh_token: refreshToken },
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+
+    clearTokens();
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.error(
+        "Server Error:",
+        error.response.status,
+        error.response.data
+      );
+    } else {
+      console.error("Client Error:", error);
+    }
     throw new Error("Logout failed. Please try again later.");
   }
 };
 
 // Refresh Token API
-export const refreshToken = async (
-  refreshToken: string,
-  accessToken: string
-): Promise<string> => {
+export const refreshAccessToken = async (): Promise<void> => {
   try {
-    const response = await axios.post(
-      `${API_URL}/users/refresh`,
-      { refresh_token: refreshToken },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) throw new Error("No refresh token available.");
+
+    const response = await axios.post(`${API_URL}/users/refresh`, {
+      refresh_token: refreshToken,
+    });
+
+    const { accessToken } = response.data;
+    setTokens(accessToken, refreshToken);
   } catch (error) {
-    throw new Error("Failed to refresh token. Please try again later.");
+    console.error(error);
+    clearTokens();
+    throw new Error("Failed to refresh access token. Please log in again.");
   }
 };
 
 // Get All Users API (Admin only)
 export const getAllUsers = async (): Promise<UserDto[]> => {
   try {
-    const response = await axios.get(`${API_URL}/users/getAll`);
+    const response = await axios.get(`${API_URL}/users/getAll`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
+    console.error(error);
     throw new Error("Failed to fetch users. Please try again later.");
   }
 };
@@ -72,12 +98,13 @@ export const getAllUsers = async (): Promise<UserDto[]> => {
 // Get User by ID API
 export const getUserById = async (id: number): Promise<UserDto> => {
   try {
-    const response = await axios.get(`${API_URL}/users/${id}`);
+    const response = await axios.get(`${API_URL}/users/${id}`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
-    throw new Error(
-      `Failed to fetch user with ID ${id}. Please try again later.`
-    );
+    console.error(error);
+    throw new Error(`Failed to fetch user with ID ${id}.`);
   }
 };
 
@@ -89,24 +116,27 @@ export const updateUser = async (
   try {
     const response = await axios.put(
       `${API_URL}/users/update/${id}`,
-      updatedUser
+      updatedUser,
+      {
+        headers: getAuthHeaders(),
+      }
     );
     return response.data;
   } catch (error) {
-    throw new Error(
-      `Failed to update user with ID ${id}. Please try again later.`
-    );
+    console.error(error);
+    throw new Error(`Failed to update user with ID ${id}.`);
   }
 };
 
 // Delete User API
 export const deleteUser = async (id: number): Promise<string> => {
   try {
-    const response = await axios.delete(`${API_URL}/users/delete/${id}`);
+    const response = await axios.delete(`${API_URL}/users/delete/${id}`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
-    throw new Error(
-      `Failed to delete user with ID ${id}. Please try again later.`
-    );
+    console.error(error);
+    throw new Error(`Failed to delete user with ID ${id}.`);
   }
 };

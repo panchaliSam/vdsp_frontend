@@ -1,15 +1,56 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { createTheme, styled } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LayersIcon from "@mui/icons-material/Layers";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import Grid from "@mui/material/Grid";
+import { useNavigate } from "react-router-dom";
+import { logout } from "@app_api/User.API";
+import { clearTokens, getRefreshToken } from "@app_api/helper/TokenHelper";
+
+const demoTheme = createTheme({
+  colorSchemes: { light: true, dark: true },
+  cssVariables: {
+    colorSchemeSelector: "class",
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 600,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
+});
+
+function useDemoRouter(initialPath: string): Router {
+  const [pathname, setPathname] = React.useState(initialPath);
+
+  const router = React.useMemo(() => {
+    return {
+      pathname,
+      searchParams: new URLSearchParams(),
+      navigate: (path: string | URL) => setPathname(String(path)),
+    };
+  }, [pathname]);
+
+  return router;
+}
+
+const Skeleton = styled("div")<{ height: number }>(({ theme, height }) => ({
+  backgroundColor: theme.palette.action.hover,
+  borderRadius: theme.shape.borderRadius,
+  height,
+  content: '" "',
+}));
 
 const NAVIGATION: Navigation = [
   {
@@ -55,52 +96,47 @@ const NAVIGATION: Navigation = [
     title: "Integrations",
     icon: <LayersIcon />,
   },
+  {
+    kind: "divider",
+  },
+  {
+    segment: "logout",
+    title: "Logout",
+    icon: <LogoutIcon />,
+  },
 ];
-
-const demoTheme = createTheme({
-  colorSchemes: { light: true, dark: true },
-  cssVariables: {
-    colorSchemeSelector: "class",
-  },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
-
-function useDemoRouter(initialPath: string): Router {
-  const [pathname, setPathname] = React.useState(initialPath);
-
-  const router = React.useMemo(() => {
-    return {
-      pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path: string | URL) => setPathname(String(path)),
-    };
-  }, [pathname]);
-
-  return router;
-}
-
-const Skeleton = styled("div")<{ height: number }>(({ theme, height }) => ({
-  backgroundColor: theme.palette.action.hover,
-  borderRadius: theme.shape.borderRadius,
-  height,
-  content: '" "',
-}));
 
 export default function DashboardLayoutBasic(props: any) {
   const { window } = props;
 
   const router = useDemoRouter("/dashboard");
-
-  // Remove this const when copying and pasting into your project.
   const demoWindow = window ? window() : undefined;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (router.pathname === "/logout") {
+      const performLogout = async () => {
+        try {
+          console.log("Logging out...");
+          const refreshToken = getRefreshToken();
+          if (!refreshToken) {
+            console.warn("No refresh token found. Redirecting to login.");
+            clearTokens();
+            navigate("/");
+            return;
+          }
+          await logout();
+          console.log("Logout successful. Clearing tokens and redirecting.");
+          clearTokens();
+          navigate("/");
+        } catch (error) {
+          console.error("Logout failed:", error);
+        }
+      };
+
+      performLogout();
+    }
+  }, [router.pathname, navigate]);
 
   return (
     <AppProvider
