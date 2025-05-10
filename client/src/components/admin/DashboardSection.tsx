@@ -6,6 +6,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LayersIcon from "@mui/icons-material/Layers";
 import LogoutIcon from "@mui/icons-material/Logout";
+import logo from "@app_assets/logo/png/logo-no-background.png";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
@@ -16,9 +17,16 @@ import { logout } from "@app_api/User.API";
 import { clearTokens, getRefreshToken } from "@app_api/helper/TokenHelper";
 
 const demoTheme = createTheme({
-  colorSchemes: { light: true, dark: true },
-  cssVariables: {
-    colorSchemeSelector: "class",
+  palette: {
+    mode: "dark",
+    background: {
+      default: "#121212",
+      paper: "#1e1e1e",
+    },
+    text: {
+      primary: "#ffffff",
+      secondary: "#bdbdbd",
+    },
   },
   breakpoints: {
     values: {
@@ -30,7 +38,6 @@ const demoTheme = createTheme({
     },
   },
 });
-
 function useDemoRouter(initialPath: string): Router {
   const [pathname, setPathname] = React.useState(initialPath);
 
@@ -117,7 +124,6 @@ export default function DashboardLayoutBasic(props: any) {
     if (router.pathname === "/logout") {
       const performLogout = async () => {
         try {
-          console.log("Logging out...");
           const refreshToken = getRefreshToken();
           if (!refreshToken) {
             console.warn("No refresh token found. Redirecting to login.");
@@ -126,7 +132,6 @@ export default function DashboardLayoutBasic(props: any) {
             return;
           }
           await logout();
-          console.log("Logout successful. Clearing tokens and redirecting.");
           clearTokens();
           navigate("/");
         } catch (error) {
@@ -141,6 +146,11 @@ export default function DashboardLayoutBasic(props: any) {
   return (
     <AppProvider
       navigation={NAVIGATION}
+      branding={{
+        logo: <img src={logo} alt="Brand Logo" style={{ height: 100 }} />,
+        title: "",
+        homeUrl: "/toolpad/core/introduction",
+      }}
       router={router}
       theme={demoTheme}
       window={demoWindow}
