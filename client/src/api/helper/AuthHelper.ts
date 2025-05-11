@@ -4,6 +4,6 @@ export const getAuthHeaders = () => {
     throw new Error("No access token found.");
   }
   return {
-    Authorization: `${accessToken}`,
+    Authorization: `Bearer ${accessToken}`,
   };
 };
