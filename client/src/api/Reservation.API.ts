@@ -7,9 +7,6 @@ export const createReservation = async (
   reservation: ReservationDto
 ): Promise<ReservationDto> => {
   try {
-    console.log("Sending request to create reservation...");
-    console.log("Headers:", getAuthHeaders());
-    console.log("Payload:", reservation);
     const response = await axiosInstance.post(
       "/reservations/create",
       reservation,
