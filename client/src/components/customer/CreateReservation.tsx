@@ -65,9 +65,13 @@ const CreateReservation = () => {
       const response = await createReservation(reservationData);
       console.log("Reservation created successfully:", response);
       alert("Reservation created successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating reservation:", error);
-      alert("Failed to create reservation. Please try again.");
+      if (error.response && error.response.status === 401) {
+        alert("Authorization failed. Please log in again.");
+      } else {
+        alert("Failed to create reservation. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
