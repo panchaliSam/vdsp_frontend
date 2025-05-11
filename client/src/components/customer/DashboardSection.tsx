@@ -15,7 +15,8 @@ import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
 import { clearTokens, getRefreshToken } from "@app_api/helper/TokenHelper";
-import CreateReservation from "./CreateReservation";
+import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
+import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
 
 const demoTheme = createTheme({
   palette: {
@@ -56,16 +57,16 @@ function useDemoRouter(initialPath: string): Router {
 const NAVIGATION: Navigation = [
   {
     kind: "header",
-    title: "Main items",
+    title: "Reservation Section",
   },
   {
     segment: "dashboard",
-    title: "Dashboard",
+    title: "My Reservations",
     icon: <DashboardIcon />,
   },
   {
     segment: "reservations",
-    title: "Reservations",
+    title: "New Reservations",
     icon: <AssignmentTurnedInIcon />,
   },
   {
@@ -116,8 +117,8 @@ export default function DashboardLayoutBasic(props: any) {
   const renderContent = () => {
     switch (router.pathname) {
       case "/dashboard":
-        return <CreateReservation />;
-      case "/people":
+        return <ApprovedReservations />;
+      case "/reservations":
         return <CreateReservation />;
       case "/restaurants":
         return <CreateReservation />;
