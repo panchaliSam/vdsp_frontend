@@ -1,5 +1,4 @@
 import type { ReservationApprovalDto } from "@app_interfaces/Reservation/RservationApprovalDto";
-import type { ReservationDto } from "@app_interfaces/Reservation/ReservationDto";
 import { getAuthHeaders } from "@app_api/helper/AuthHelper";
 import axiosInstance from "@app_api/AxiosInstance";
 
@@ -21,17 +20,14 @@ export const getAllReservationApprovals = async (): Promise<
 };
 
 // Get Approved Reservations API (Customer only)
-export const getApprovedReservations = async (
-  authorizationHeader: string
-): Promise<ReservationDto[]> => {
+export const getApprovedReservations = async (): Promise<
+  ReservationApprovalDto[]
+> => {
   try {
     const response = await axiosInstance.get(
       "/reservationApprovals/reservationApproval",
       {
-        headers: {
-          ...getAuthHeaders(),
-          Authorization: authorizationHeader,
-        },
+        headers: getAuthHeaders(),
       }
     );
     return response.data;
