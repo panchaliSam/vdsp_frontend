@@ -1,57 +1,57 @@
 import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
-import { Navbar, LoadingScreen, Footer } from "./components";
-import { Home, SignIn, SignUp, ReservationForm } from "./pages";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "@app_routes/ProtectedRoutes";
+
+import HeroSection from "@app_pages/HeroSection";
+import LoginPage from "@app_pages/Login";
+import RegisterPage from "@app_pages/Register";
+import NotFoundPage from "@app_pages/404";
+import LoadingPage from "@app_pages/LoadingPage";
+import { AdminDashboard } from "@app_pages/admin/Dashboard";
+import { CustomerDashboard } from "@app_pages/customer/Dashboard";
 
 const App: React.FC = () => {
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false);
-    }, 3000);
+      setIsLoading(false);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
 
-  return (
-    <Router>
-      <MainApp loading={loading} />
-    </Router>
-  );
-};
-
-const MainApp: React.FC<{ loading: boolean }> = ({ loading }) => {
-  const location = useLocation();
-
-  const hidePaths = ["/signIn", "/signUp", "/reservation"];
-  const showNavbar = !hidePaths.includes(location.pathname);
-  const showFooter = !hidePaths.includes(location.pathname);
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   return (
-    <>
-      {loading ? (
-        <LoadingScreen />
-      ) : (
-        <div>
-          {showNavbar && <Navbar />}
-
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/signIn" element={<SignIn />} />
-            <Route path="/signUp" element={<SignUp />} />
-            <Route path="/reservation" element={<ReservationForm />} />
-          </Routes>
-
-          {showFooter && <Footer />}
-        </div>
-      )}
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HeroSection />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute
+              component={AdminDashboard}
+              allowedRoles={["ROLE_ADMIN"]}
+            />
+          }
+        />
+        <Route
+          path="/customer"
+          element={
+            <ProtectedRoute
+              component={CustomerDashboard}
+              allowedRoles={["ROLE_CUSTOMER"]}
+            />
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

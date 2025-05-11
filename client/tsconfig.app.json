@@ -10,7 +10,7 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
@@ -19,8 +19,30 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "baseUrl": "./",
+
+    /* Paths */
+    "paths": {
+      "@app_assets/*": ["src/assets/*"],
+      "@app_components/*": ["src/components/*"],
+      "@app_common/*": ["src/common/*"],
+      "@app_contexts/*": ["src/contexts/*"],
+      "@app_helper/*": ["src/helper/*"],
+      "@app_hooks/*": ["src/hooks/*"],
+      "@app_pages/*": ["src/pages/*"],
+      "@app_routes/*": ["src/routes/*"],
+      "@app_services/*": ["src/services/*"],
+      "@app_theme/*": ["src/theme/*"],
+      "@app_utils/*": ["src/utils/*"],
+      "@app_interfaces/*": ["src/interfaces/*"],
+      "@app_api/*": ["src/api/*"],
+      "@app_auth/*": ["src/auth/*"],
+      "@app_context/*": ["src/context/*"]
+    }
   },
   "include": ["src"]
 }
