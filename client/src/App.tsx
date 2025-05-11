@@ -8,6 +8,7 @@ import RegisterPage from "@app_pages/Register";
 import NotFoundPage from "@app_pages/404";
 import LoadingPage from "@app_pages/LoadingPage";
 import { AdminDashboard } from "@app_pages/admin/Dashboard";
+import { CustomerDashboard } from "@app_pages/customer/Dashboard";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +37,15 @@ const App: React.FC = () => {
             <ProtectedRoute
               component={AdminDashboard}
               allowedRoles={["ROLE_ADMIN"]}
+            />
+          }
+        />
+        <Route
+          path="/customer"
+          element={
+            <ProtectedRoute
+              component={CustomerDashboard}
+              allowedRoles={["ROLE_CUSTOMER"]}
             />
           }
         />
