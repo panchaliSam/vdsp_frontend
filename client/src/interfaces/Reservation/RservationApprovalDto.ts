@@ -4,6 +4,7 @@ export interface ReservationApprovalDto {
   status: ApprovalStatus;
   customerName: string;
   eventType: EventType;
+  reservationId: number;
   packageId: number;
   eventLocation: string;
   eventDate: string;
