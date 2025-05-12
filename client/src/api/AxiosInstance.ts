@@ -40,6 +40,7 @@ axiosInstance.interceptors.response.use(
         console.error("Token refresh failed:", refreshError);
         clearTokens();
         window.location.href = "/login";
+        return Promise.reject(refreshError);
       }
     }
 
