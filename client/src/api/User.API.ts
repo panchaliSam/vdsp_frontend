@@ -1,5 +1,4 @@
 import axios from "axios";
-import { API_URL } from "./ApiURL";
 import type { LoginPayload } from "@app_interfaces/User/LoginPayload";
 import type { TokenResponse } from "@app_interfaces/User/TokenResponse";
 import type { UserDto } from "@app_interfaces/User/UserDto";
@@ -32,25 +31,6 @@ export const login = async (userData: LoginPayload): Promise<TokenResponse> => {
   } catch (error) {
     console.error(error);
     throw new Error("Login failed. Please check your credentials.");
-  }
-};
-
-// Refresh Token API
-export const refreshAccessToken = async (): Promise<void> => {
-  try {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) throw new Error("No refresh token available.");
-
-    const response = await axiosInstance.post("/users/refresh", {
-      refresh_token: refreshToken,
-    });
-
-    const { accessToken } = response.data;
-    setTokens(accessToken, refreshToken);
-  } catch (error) {
-    console.error(error);
-    clearTokens();
-    throw new Error("Failed to refresh access token. Please log in again.");
   }
 };
 
@@ -113,30 +93,58 @@ export const deleteUser = async (id: number): Promise<string> => {
   }
 };
 
+// Refresh Token API
+export const refreshAccessToken = async (): Promise<void> => {
+  try {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) throw new Error("No refresh token available.");
+
+    const response = await axiosInstance.post("/users/refresh", {
+      refresh_token: refreshToken,
+    });
+
+    const { accessToken } = response.data;
+    setTokens(accessToken, refreshToken);
+  } catch (error) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      error.response?.data.message === "Invalid or revoked refresh token"
+    ) {
+      console.error("Refresh token is invalid or revoked.");
+    } else if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      error.response?.data.message === "Refresh token expired"
+    ) {
+      console.error("Refresh token has expired.");
+    } else {
+      console.error("Failed to refresh access token.", error);
+    }
+    clearTokens();
+    throw error;
+  }
+};
+
 // Logout API
 export const logout = async (): Promise<void> => {
   try {
     const refreshToken = getRefreshToken();
     if (!refreshToken) throw new Error("No refresh token found.");
 
-    await axios.post(
-      `${API_URL}/users/logout`,
-      { refresh_token: refreshToken },
-      {
-        headers: getAuthHeaders(),
-      }
-    );
+    await axiosInstance.post("/users/logout", { refresh_token: refreshToken });
     clearTokens();
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.error(
-        "Server Error:",
+        "Logout failed with server error:",
         error.response.status,
         error.response.data
       );
     } else {
-      console.error("Client Error:", error);
+      console.error("Logout failed with client error:", error);
     }
+    clearTokens();
     throw new Error("Logout failed. Please try again later.");
   }
 };
