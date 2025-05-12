@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getApprovedReservations } from "@app_api/ReservationStatusApproval";
+import { getReservationById } from "@app_api/Reservation.API";
 import type { ReservationApprovalDto } from "@app_interfaces/Reservation/RservationApprovalDto";
+import type { ReservationDto } from "@app_interfaces/Reservation/ReservationDto";
 import {
   Container,
   Typography,
@@ -19,15 +21,16 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
+  Divider,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility"; // Import the eye icon
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const ApprovedReservations = () => {
+const ApprovedReservations: React.FC = () => {
   const [reservations, setReservations] = useState<ReservationApprovalDto[]>(
     []
   );
   const [selectedReservation, setSelectedReservation] =
-    useState<ReservationApprovalDto | null>(null);
+    useState<ReservationDto | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -79,8 +82,18 @@ const ApprovedReservations = () => {
     });
   };
 
-  const handleViewClick = (reservation: ReservationApprovalDto) => {
-    setSelectedReservation(reservation);
+  const handleViewClick = async (reservationId: number) => {
+    try {
+      const reservationDetails = await getReservationById(reservationId);
+      setSelectedReservation(reservationDetails);
+    } catch (err) {
+      console.error("Failed to fetch reservation details:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to fetch reservation details."
+      );
+    }
   };
 
   const handleCloseModal = () => {
@@ -132,7 +145,9 @@ const ApprovedReservations = () => {
                     </TableCell>
                     <TableCell>
                       <IconButton
-                        onClick={() => handleViewClick(reservation)}
+                        onClick={() =>
+                          handleViewClick(reservation.reservationId)
+                        }
                         sx={{ color: "grey.500" }}
                       >
                         <VisibilityIcon />
@@ -196,51 +211,75 @@ const ApprovedReservations = () => {
                 <Typography variant="h6" gutterBottom>
                   Reservation Details
                 </Typography>
+                <Divider sx={{ mb: 2 }} />
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>ID:</strong> {selectedReservation.id}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body1" fontWeight="bold">
+                    Type:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedReservation.eventType}
+                  </Typography>
+                </Box>
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>Type:</strong> {selectedReservation.eventType}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body1" fontWeight="bold">
+                    Package Name:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedReservation.packageName}
+                  </Typography>
+                </Box>
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>Package:</strong> {selectedReservation.packageId}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body1" fontWeight="bold">
+                    Total Amount:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedReservation.priceAmount}
+                  </Typography>
+                </Box>
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>Location:</strong> {selectedReservation.eventLocation}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body1" fontWeight="bold">
+                    Location:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedReservation.eventLocation}
+                  </Typography>
+                </Box>
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>Date:</strong>{" "}
-                  {new Date(selectedReservation.eventDate).toDateString()}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body1" fontWeight="bold">
+                    Date:
+                  </Typography>
+                  <Typography variant="body1">
+                    {new Date(selectedReservation.eventDate).toDateString()}
+                  </Typography>
+                </Box>
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>Start Time:</strong>{" "}
-                  {formatTime(selectedReservation.eventStartTime)}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body1" fontWeight="bold">
+                    Start Time:
+                  </Typography>
+                  <Typography variant="body1">
+                    {formatTime(selectedReservation.eventStartTime)}
+                  </Typography>
+                </Box>
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>End Time:</strong>{" "}
-                  {formatTime(selectedReservation.eventEndTime)}
-                </Typography>
-
-                <Typography variant="body1" gutterBottom>
-                  <strong>Session:</strong>{" "}
-                  {selectedReservation.sessionType.replace("_SESSION", "")}
-                </Typography>
-
-                <Typography variant="body1" gutterBottom>
-                  <strong>Status:</strong> {selectedReservation.status}
-                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body1" fontWeight="bold">
+                    End Time:
+                  </Typography>
+                  <Typography variant="body1">
+                    {formatTime(selectedReservation.eventEndTime)}
+                  </Typography>
+                </Box>
 
                 <Button
                   onClick={handleCloseModal}
                   sx={{
-                    mt: 2,
+                    mt: 4,
                     borderRadius: "20px",
                     bgcolor: "white",
                     color: "black",
@@ -251,6 +290,7 @@ const ApprovedReservations = () => {
                     },
                   }}
                   variant="outlined"
+                  fullWidth
                 >
                   Close
                 </Button>
