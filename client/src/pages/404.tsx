@@ -2,23 +2,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { logout } from "@app_api/User.API";
-import { clearTokens, getRefreshToken } from "@app_api/helper/TokenHelper";
 
 const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleGoHome = async () => {
     try {
-      const refreshToken = getRefreshToken();
-      if (!refreshToken) {
-        console.warn("No refresh token found. Redirecting to login.");
-        clearTokens();
-        navigate("/");
-        return;
-      }
-      await logout();
-      clearTokens();
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);

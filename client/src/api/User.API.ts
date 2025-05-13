@@ -7,7 +7,7 @@ import {
   setTokens,
   clearTokens,
 } from "@app_api/helper/TokenHelper";
-import { getAuthHeaders } from "@app_api/helper/AuthHelper";
+
 import axiosInstance from "@app_api/AxiosInstance";
 
 // Register User API
@@ -26,7 +26,12 @@ export const login = async (userData: LoginPayload): Promise<TokenResponse> => {
   try {
     const response = await axiosInstance.post("/users/login", userData);
     const { access_token, refresh_token } = response.data;
+
+    console.log("L: Access Token:", access_token);
+    console.log("L: Refresh Token:", refresh_token);
+
     setTokens(access_token, refresh_token);
+
     return response.data;
   } catch (error) {
     console.error(error);
@@ -37,9 +42,7 @@ export const login = async (userData: LoginPayload): Promise<TokenResponse> => {
 // Get All Users API (Admin only)
 export const getAllUsers = async (): Promise<UserDto[]> => {
   try {
-    const response = await axiosInstance.get("/users/getAll", {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.get("/users/getAll");
     return response.data;
   } catch (error) {
     console.error(error);
@@ -50,9 +53,7 @@ export const getAllUsers = async (): Promise<UserDto[]> => {
 // Get User by ID API
 export const getUserById = async (id: number): Promise<UserDto> => {
   try {
-    const response = await axiosInstance.get(`/users/${id}`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.get(`/users/${id}`);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -68,10 +69,7 @@ export const updateUser = async (
   try {
     const response = await axiosInstance.put(
       `/users/update/${id}`,
-      updatedUser,
-      {
-        headers: getAuthHeaders(),
-      }
+      updatedUser
     );
     return response.data;
   } catch (error) {
@@ -83,9 +81,7 @@ export const updateUser = async (
 // Delete User API
 export const deleteUser = async (id: number): Promise<string> => {
   try {
-    const response = await axiosInstance.delete(`/users/delete/${id}`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.delete(`/users/delete/${id}`);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -94,7 +90,7 @@ export const deleteUser = async (id: number): Promise<string> => {
 };
 
 // Refresh Token API
-export const refreshAccessToken = async (): Promise<void> => {
+export const refreshAccessToken = async (): Promise<string> => {
   try {
     const refreshToken = getRefreshToken();
     if (!refreshToken) throw new Error("No refresh token available.");
@@ -102,9 +98,12 @@ export const refreshAccessToken = async (): Promise<void> => {
     const response = await axiosInstance.post("/users/refresh", {
       refresh_token: refreshToken,
     });
+    console.log("U: Refresh Token Response:", refreshToken);
+    console.log("U: Access Token:", response.data);
+    const accessToken = response.data;
 
-    const { accessToken } = response.data;
-    setTokens(accessToken, refreshToken);
+    setTokens(String(accessToken), String(refreshToken));
+    return accessToken;
   } catch (error) {
     if (
       axios.isAxiosError(error) &&
@@ -121,7 +120,6 @@ export const refreshAccessToken = async (): Promise<void> => {
     } else {
       console.error("Failed to refresh access token.", error);
     }
-    clearTokens();
     throw error;
   }
 };
