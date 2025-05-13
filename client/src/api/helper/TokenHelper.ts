@@ -7,8 +7,16 @@ export const getRefreshToken = (): string | null => {
 };
 
 export const setTokens = (accessToken: string, refreshToken: string) => {
-  localStorage.setItem("access_token", accessToken);
-  localStorage.setItem("refresh_token", refreshToken);
+
+
+  if (accessToken.length > 0) {
+    localStorage.setItem("access_token", accessToken);
+  }
+
+  if (refreshToken.length > 0) {
+    localStorage.setItem("refresh_token", refreshToken);
+  }
+
 };
 
 export const clearTokens = () => {

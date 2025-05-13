@@ -42,6 +42,18 @@ const CreateReservation = () => {
       return;
     }
 
+    if (eventDate) {
+      const today = new Date();
+      const daysDifference = Math.ceil(
+        (eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysDifference < 7) {
+        alert("Reservations must be made at least 7 days in advance.");
+        return;
+      }
+    }
+
     const formatToLocalDate = (date: Date) =>
       new Date(date.getTime() - date.getTimezoneOffset() * 60000)
         .toISOString()
