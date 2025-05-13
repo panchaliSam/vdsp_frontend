@@ -98,11 +98,15 @@ export const refreshAccessToken = async (): Promise<string> => {
     const response = await axiosInstance.post("/users/refresh", {
       refresh_token: refreshToken,
     });
-    console.log("U: Refresh Token Response:", refreshToken);
-    console.log("U: Access Token:", response.data);
-    const accessToken = response.data;
 
+    console.log("U: Refresh Token Response:", refreshToken);
+    console.log("U: Refresh Token Response:", response);
+    const accessToken = response.data;
+    if (!accessToken) throw new Error("No access token available.");
+
+    // Set new access token
     setTokens(String(accessToken), String(refreshToken));
+
     return accessToken;
   } catch (error) {
     if (
