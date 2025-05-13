@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "@app_routes/ProtectedRoutes";
 
 import HeroSection from "@app_pages/HeroSection";
@@ -56,6 +56,24 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute
               component={CustomerProceedPayment}
+              allowedRoles={["ROLE_CUSTOMER"]}
+            />
+          }
+        />
+        <Route
+          path="/payment/cancel"
+          element={
+            <ProtectedRoute
+              component={() => <Navigate to="/customer" replace />}
+              allowedRoles={["ROLE_CUSTOMER"]}
+            />
+          }
+        />
+        <Route
+          path="/payment/return"
+          element={
+            <ProtectedRoute
+              component={() => <Navigate to="/customer" replace />}
               allowedRoles={["ROLE_CUSTOMER"]}
             />
           }
