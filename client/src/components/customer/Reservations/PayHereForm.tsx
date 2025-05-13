@@ -65,17 +65,17 @@ const PayHereForm = () => {
           <input
             type="hidden"
             name="return_url"
-            value="http://localhost:8084/payment/success"
+            value="http://localhost:5173/payment/return"
           />
           <input
             type="hidden"
             name="cancel_url"
-            value="http://localhost:8084/payment/cancel"
+            value="http://localhost:5173/payment/cancel"
           />
           <input
             type="hidden"
             name="notify_url"
-            value="http://localhost:8084/payment/notify"
+            value="http://localhost:8084/api/payment/notify"
           />
           <input type="hidden" name="hash" value={hash} />
           <input type="hidden" name="country" value="Sri Lanka" />
@@ -272,7 +272,7 @@ const PayHereForm = () => {
       <div className="mt-6 text-center">
         <button
           type="submit"
-          className="bg-white text-black px-6 py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="bg-white text-black px-6 py-3 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           Complete Payment
         </button>
