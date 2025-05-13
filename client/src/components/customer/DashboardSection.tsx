@@ -14,7 +14,6 @@ import { Suspense } from "react";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
-import { clearTokens, getRefreshToken } from "@app_api/helper/TokenHelper";
 import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
 import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
 
@@ -135,15 +134,7 @@ export default function DashboardLayoutBasic(props: any) {
     if (router.pathname === "/logout") {
       const performLogout = async () => {
         try {
-          const refreshToken = getRefreshToken();
-          if (!refreshToken) {
-            console.warn("No refresh token found. Redirecting to login.");
-            clearTokens();
-            navigate("/");
-            return;
-          }
           await logout();
-          clearTokens();
           navigate("/");
         } catch (error) {
           console.error("Logout failed:", error);

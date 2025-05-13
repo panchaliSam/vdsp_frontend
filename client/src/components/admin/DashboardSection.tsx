@@ -14,7 +14,6 @@ import { PageContainer } from "@toolpad/core/PageContainer";
 import Grid from "@mui/material/Grid";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
-import { clearTokens, getRefreshToken } from "@app_api/helper/TokenHelper";
 
 const demoTheme = createTheme({
   palette: {
@@ -124,15 +123,7 @@ export default function DashboardLayoutBasic(props: any) {
     if (router.pathname === "/logout") {
       const performLogout = async () => {
         try {
-          const refreshToken = getRefreshToken();
-          if (!refreshToken) {
-            console.warn("No refresh token found. Redirecting to login.");
-            clearTokens();
-            navigate("/");
-            return;
-          }
           await logout();
-          clearTokens();
           navigate("/");
         } catch (error) {
           console.error("Logout failed:", error);

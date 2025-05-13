@@ -1,5 +1,5 @@
 import type { ReservationApprovalDto } from "@app_interfaces/Reservation/RservationApprovalDto";
-import { getAuthHeaders } from "@app_api/helper/AuthHelper";
+
 import axiosInstance from "@app_api/AxiosInstance";
 
 // Get All Reservation Approvals API (Admin only)
@@ -7,9 +7,7 @@ export const getAllReservationApprovals = async (): Promise<
   ReservationApprovalDto[]
 > => {
   try {
-    const response = await axiosInstance.get("/reservationApprovals/getAll", {
-      headers: getAuthHeaders(),
-    });
+    const response = await axiosInstance.get("/reservationApprovals/getAll");
     return response.data;
   } catch (error) {
     console.error(error);
@@ -25,10 +23,7 @@ export const getApprovedReservations = async (): Promise<
 > => {
   try {
     const response = await axiosInstance.get(
-      "/reservationApprovals/reservationApproval",
-      {
-        headers: getAuthHeaders(),
-      }
+      "/reservationApprovals/reservationApproval"
     );
     return response.data;
   } catch (error) {
@@ -47,10 +42,7 @@ export const updateApprovalStatus = async (
   try {
     const response = await axiosInstance.patch(
       `/reservationApprovals/${id}/status`,
-      { status },
-      {
-        headers: getAuthHeaders(),
-      }
+      { status }
     );
     return response.data;
   } catch (error) {
