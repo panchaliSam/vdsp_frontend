@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { getApprovedReservations } from "@app_api/ReservationStatusApproval";
 import { getReservationById } from "@app_api/Reservation.API";
+import { generateHash } from "@app_api/Payment.API";
 import type { ReservationApprovalDto } from "@app_interfaces/Reservation/RservationApprovalDto";
 import type { ReservationDto } from "@app_interfaces/Reservation/ReservationDto";
+import type { PaymentRequestDto } from "@app_interfaces/Payment/PaymentRequestDto";
 import {
   Container,
   Typography,
@@ -24,6 +26,7 @@ import {
   Divider,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useNavigate } from "react-router-dom";
 
 const ApprovedReservations: React.FC = () => {
   const [reservations, setReservations] = useState<ReservationApprovalDto[]>(
@@ -36,6 +39,8 @@ const ApprovedReservations: React.FC = () => {
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -100,6 +105,43 @@ const ApprovedReservations: React.FC = () => {
     setSelectedReservation(null);
   };
 
+  const handlePaymentProceedClick = async (reservationId: number) => {
+    try {
+      const reservationDetails = await getReservationById(reservationId);
+
+      if (!reservationDetails) {
+        setError("Failed to fetch reservation details for payment.");
+        return;
+      }
+
+      console.log("Fetched reservation details:", reservationDetails);
+
+      const paymentRequest: PaymentRequestDto = {
+        orderId: reservationId,
+        amount: Number(reservationDetails.priceAmount),
+      };
+
+      console.log("Payment Request Object:", paymentRequest);
+
+      const paymentResponse = await generateHash(paymentRequest);
+      console.info("Hash generated successfully:", paymentResponse);
+
+      navigate("/payment", {
+        state: {
+          orderId: reservationId,
+          amount: paymentRequest.amount,
+          hash: paymentResponse,
+          items: [reservationDetails.packageName],
+        },
+      });
+    } catch (err) {
+      console.error("Failed to generate hash:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to generate payment hash."
+      );
+    }
+  };
+
   return (
     <Container sx={{ mt: 4, mb: 4, px: isSmallScreen ? 2 : 4 }}>
       {loading ? (
@@ -155,6 +197,9 @@ const ApprovedReservations: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <Button
+                        onClick={() =>
+                          handlePaymentProceedClick(reservation.reservationId)
+                        }
                         variant="outlined"
                         disabled={reservation.status !== "APPROVED"}
                         sx={{

@@ -26,7 +26,7 @@ const NotFoundPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="flex flex-col items-center justify-center w-full h-screen bg-gradient-to-r from-black via-gray-900 to-gray-800 text-white">
       <motion.div
         className="flex flex-col items-center gap-4 text-center"
         initial={{ opacity: 0, scale: 0.8 }}

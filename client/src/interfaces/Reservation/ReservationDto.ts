@@ -6,8 +6,8 @@ export interface ReservationDto {
   eventStartTime: string; // Format: HH:mm
   eventEndTime: string; // Format: HH:mm
   packageId: number;
-  packageName: string;
-  priceAmount: string;
+  packageName?: string;
+  priceAmount?: string;
   customerName?: string;
   sessionType?: SessionType;
 }
