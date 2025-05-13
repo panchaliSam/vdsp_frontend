@@ -134,6 +134,7 @@ const ApprovedReservations: React.FC = () => {
           items: [reservationDetails.packageName],
         },
       });
+      console.log()
     } catch (err) {
       console.error("Failed to generate hash:", err);
       setError(
