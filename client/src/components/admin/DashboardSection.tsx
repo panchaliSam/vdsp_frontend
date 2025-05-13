@@ -121,6 +121,7 @@ export default function DashboardLayoutBasic(props: any) {
 
   useEffect(() => {
     if (router.pathname === "/logout") {
+      console.log("Logging out...");
       const performLogout = async () => {
         try {
           await logout();
