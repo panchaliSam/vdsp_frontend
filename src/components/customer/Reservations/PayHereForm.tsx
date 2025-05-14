@@ -50,7 +50,7 @@ const PayHereForm = () => {
 
   return (
     <form
-      method="post"
+      method="POST"
       action="https://sandbox.payhere.lk/pay/checkout"
       className="bg-black text-white p-8 rounded-lg shadow-xl w-full max-w-4xl"
     >
@@ -75,7 +75,7 @@ const PayHereForm = () => {
           <input
             type="hidden"
             name="notify_url"
-            value="http://localhost:8084/api/payment/notify"
+            value="https://4e3e-112-134-172-218.ngrok-free.app/api/payment/notify"
           />
           <input type="hidden" name="hash" value={hash} />
           <input type="hidden" name="country" value="Sri Lanka" />

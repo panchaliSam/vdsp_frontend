@@ -27,12 +27,12 @@ const CreateReservation = () => {
   const [eventDate, setEventDate] = useState<Date | null>(new Date());
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
-  const [packageId, setPackageId] = useState<string>("");
+  const [packageName, setPackageName] = useState<string>("");
   const [eventLocation, setEventLocation] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!packageId || !eventLocation || !startTime || !endTime) {
+    if (!packageName || !eventLocation || !startTime || !endTime) {
       alert("Please fill in all required fields.");
       return;
     }
@@ -67,7 +67,7 @@ const CreateReservation = () => {
       eventDate: eventDate ? formatToLocalDate(eventDate) : "",
       eventStartTime: startTime ? formatToTime(startTime) : "",
       eventEndTime: endTime ? formatToTime(endTime) : "",
-      packageId: Number(packageId),
+      packageName: packageName,
       eventLocation,
     };
 
@@ -132,11 +132,11 @@ const CreateReservation = () => {
         </FormControl>
 
         <TextField
-          label="Package ID"
+          label="Package Name"
           variant="outlined"
-          type="number"
-          value={packageId}
-          onChange={(e) => setPackageId(e.target.value)}
+          type="text"
+          value={packageName}
+          onChange={(e) => setPackageName(e.target.value)}
           sx={{
             input: { color: "white" },
             "& .MuiOutlinedInput-root": {
@@ -240,9 +240,8 @@ const CreateReservation = () => {
           </button>
           <button
             onClick={handleSubmit}
-            className={`bg-white text-black px-4 py-2 rounded border border-gray-300 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-white text-black px-4 py-2 rounded border border-gray-300 ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             disabled={loading}
           >
             {loading ? "Submitting..." : "Submit"}
