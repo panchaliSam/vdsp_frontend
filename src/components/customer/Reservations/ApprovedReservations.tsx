@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getApprovedReservations } from "@app_api/ReservationStatusApproval";
 import { getReservationById } from "@app_api/Reservation.API";
 import { generateHash } from "@app_api/Payment.API";
+import { isAlreadyPaid } from "@app_api/Payment.API";
 import type { ReservationApprovalDto } from "@app_interfaces/Reservation/RservationApprovalDto";
 import type { ReservationDto } from "@app_interfaces/Reservation/ReservationDto";
 import type { PaymentRequestDto } from "@app_interfaces/Payment/PaymentRequestDto";
@@ -107,25 +108,32 @@ const ApprovedReservations: React.FC = () => {
 
   const handlePaymentProceedClick = async (reservationId: number) => {
     try {
-      const reservationDetails = await getReservationById(reservationId);
+      // Step 1: Check if the reservation is already paid
+      const paymentStatus = await isAlreadyPaid({ reservationId });
 
+      if (paymentStatus?.id !== undefined) {
+        // Already paid — don't proceed to payment
+        alert("Payment has already been completed for this reservation.");
+        return;
+      }
+
+      // Step 2: Fetch reservation details
+      const reservationDetails = await getReservationById(reservationId);
       if (!reservationDetails) {
         setError("Failed to fetch reservation details for payment.");
         return;
       }
 
-      console.log("Fetched reservation details:", reservationDetails);
-
+      // Step 3: Prepare the payment request
       const paymentRequest: PaymentRequestDto = {
         orderId: reservationId,
         amount: Number(reservationDetails.priceAmount),
       };
 
-      console.log("Payment Request Object:", paymentRequest);
-
+      // Step 4: Generate hash
       const paymentResponse = await generateHash(paymentRequest);
-      console.info("Hash generated successfully:", paymentResponse);
 
+      // Step 5: Navigate to /payment
       navigate("/payment", {
         state: {
           orderId: reservationId,
@@ -134,11 +142,12 @@ const ApprovedReservations: React.FC = () => {
           items: [reservationDetails.packageName],
         },
       });
-      console.log()
     } catch (err) {
-      console.error("Failed to generate hash:", err);
+      console.error("Payment flow failed:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to generate payment hash."
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred while preparing the payment."
       );
     }
   };
