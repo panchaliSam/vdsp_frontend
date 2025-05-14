@@ -75,7 +75,7 @@ const PayHereForm = () => {
           <input
             type="hidden"
             name="notify_url"
-            value="https://4e3e-112-134-172-218.ngrok-free.app/api/payment/notify"
+            value="https://c327-112-134-172-218.ngrok-free.app/api/payment/notify"
           />
           <input type="hidden" name="hash" value={hash} />
           <input type="hidden" name="country" value="Sri Lanka" />

@@ -3,9 +3,9 @@ import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import DescriptionIcon from "@mui/icons-material/Description";
 import LayersIcon from "@mui/icons-material/Layers";
 import LogoutIcon from "@mui/icons-material/Logout";
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
@@ -76,21 +76,14 @@ const NAVIGATION: Navigation = [
     title: "Analytics",
   },
   {
+    segment: "notifications",
+    title: "Notifications",
+    icon: <NotificationsIcon />,
+  },
+  {
     segment: "reports",
     title: "Reports",
     icon: <BarChartIcon />,
-    children: [
-      {
-        segment: "sales",
-        title: "Sales",
-        icon: <DescriptionIcon />,
-      },
-      {
-        segment: "traffic",
-        title: "Traffic",
-        icon: <DescriptionIcon />,
-      },
-    ],
   },
   {
     segment: "integrations",
