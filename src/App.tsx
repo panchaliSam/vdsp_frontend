@@ -9,7 +9,7 @@ import NotFoundPage from "@app_pages/404";
 import LoadingPage from "@app_pages/LoadingPage";
 import { AdminDashboard } from "@app_pages/admin/Dashboard";
 import { CustomerDashboard } from "@app_pages/customer/Dashboard";
-
+import { StaffDashboard } from "@app_pages/staff/Dashboard";
 import { CustomerProceedPayment } from "@app_pages/customer/ProceedPayment";
 
 const App: React.FC = () => {
@@ -75,6 +75,15 @@ const App: React.FC = () => {
             <ProtectedRoute
               component={() => <Navigate to="/customer" replace />}
               allowedRoles={["ROLE_CUSTOMER"]}
+            />
+          }
+        />
+        <Route
+          path="/staff"
+          element={
+            <ProtectedRoute
+              component={StaffDashboard}
+              allowedRoles={["ROLE_STAFF"]}
             />
           }
         />
