@@ -2,10 +2,9 @@ import React, { useEffect } from "react";
 import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import LayersIcon from "@mui/icons-material/Layers";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import PaymentIcon from '@mui/icons-material/Payment';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
@@ -16,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
 import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
 import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
+import PaymentHistory from "@app_components/customer/Payments/PaymentHistory";
 
 const demoTheme = createTheme({
   palette: {
@@ -81,14 +81,9 @@ const NAVIGATION: Navigation = [
     icon: <NotificationsIcon />,
   },
   {
-    segment: "reports",
-    title: "Reports",
-    icon: <BarChartIcon />,
-  },
-  {
-    segment: "integrations",
-    title: "Integrations",
-    icon: <LayersIcon />,
+    segment: "payments",
+    title: "Payments",
+    icon: <PaymentIcon />,
   },
   {
     kind: "divider",
@@ -112,8 +107,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <ApprovedReservations />;
       case "/reservations":
         return <CreateReservation />;
-      case "/restaurants":
-        return <CreateReservation />;
+      case "/payments":
+        return <PaymentHistory />;
       case "/orders":
         return <CreateReservation />;
       default:
