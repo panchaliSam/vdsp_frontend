@@ -23,6 +23,7 @@ import { logout } from "@app_api/User.API";
 import PeopleComponent from "@app_components/admin/Dashboard/ManageUsers";
 import PackageComponent from "@app_components/admin/Dashboard/ManagePackages";
 import AdminReservationApprovals from "@app_components/admin/Approvals/ReservationApprovals";
+import RoleComponent from "@app_components/admin/Role/ManageRoles";
 
 const demoTheme = createTheme({
   palette: {
@@ -194,6 +195,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <PackageComponent />;
       case "/approveReservations":
         return <AdminReservationApprovals />;
+      case "/roles":
+        return <RoleComponent />;
       default:
         return <PeopleComponent />;
     }
