@@ -6,11 +6,13 @@ import PeopleIcon from '@mui/icons-material/People';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PaymentIcon from '@mui/icons-material/Payment';
 import logo from "@app_assets/logo/png/logo-no-background.png";
+import CollectionsIcon from '@mui/icons-material/Collections';
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
@@ -18,9 +20,9 @@ import { Suspense } from "react";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
-import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
-import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
-import PaymentHistory from "@app_components/customer/Payments/PaymentHistory";
+import PeopleComponent from "@app_components/admin/Dashboard/ManageUsers";
+import PackageComponent from "@app_components/admin/Dashboard/ManagePackages";
+import AdminReservationApprovals from "@app_components/admin/Approvals/ReservationApprovals";
 
 const demoTheme = createTheme({
   palette: {
@@ -77,6 +79,45 @@ const NAVIGATION: Navigation = [
     segment: "packages",
     title: "Packages",
     icon: <InventoryIcon />,
+  },
+  {
+    segment: "gallery",
+    title: "Gallery",
+    icon: <CollectionsIcon />,
+  },
+  {
+    kind: "divider",
+  },
+  {
+    kind: "header",
+    title: "Reservation Section",
+  },
+  {
+    segment: "reservations",
+    title: "Reservations",
+    icon: <InventoryIcon />,
+  },
+  {
+    segment: "approveReservations",
+    title: "Approve Reservations",
+    icon: <CheckCircleIcon />,
+  },
+  {
+    segment: "manageReservations",
+    title: "Manage Reservations",
+    icon: <InventoryIcon />,
+  },
+  {
+    kind: "divider",
+  },
+  {
+    kind: "header",
+    title: "Approvals",
+  },
+  {
+    segment: "approveReservations",
+    title: "Approve Reservations",
+    icon: <CheckCircleIcon />,
   },
   {
     kind: "divider",
@@ -147,16 +188,14 @@ export default function DashboardLayoutBasic(props: any) {
 
   const renderContent = () => {
     switch (router.pathname) {
-      case "/dashboard":
-        return <ApprovedReservations />;
-      case "/reservations":
-        return <CreateReservation />;
-      case "/payments":
-        return <PaymentHistory />;
-      case "/orders":
-        return <CreateReservation />;
+      case "/people":
+        return <PeopleComponent />;
+      case "/packages":
+        return <PackageComponent />;
+      case "/approveReservations":
+        return <AdminReservationApprovals />;
       default:
-        return <CreateReservation />;
+        return <PeopleComponent />;
     }
   };
 
