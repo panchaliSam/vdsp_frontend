@@ -45,14 +45,18 @@ const HeroSection = () => {
             transition={{ duration: 0.8 }}
             className="mb-6 flex justify-center"
           >
-            <img src={Logo} alt="Vidua De Silva Photography" className="h-28 md:h-32" />
+            {/* <img src={Logo} alt="Vidua De Silva Photography" className="h-28 md:h-32" /> */}
           </motion.div>
-          <div className="text-3xl md:text-5xl mb-4 leading-snug italic">
-            Capturing Stories in Every Frame
+          <div className="text-3xl md:text-4xl mb-4 leading-snug italic">
+            "Capturing Stories in Every Frame"
           </div>
 
-          <p className="text-lg md:text-xl font-light mb-8 px-2">
-            Welcome to <span className="text-yellow-400 font-medium">Vidua De Silva Photography</span>, a professional studio in the heart of <strong>Homagama</strong>. We specialize in weddings, portraits, and lifestyle sessions turning life’s moments into everlasting memories.
+          <p className="text-lg md:text-xl font-light mb-8 px-2 text-gray-300">
+            Welcome to <span className="text-yellow-400 font-medium">Vidua De Silva Photography</span>, a professional studio.
+          </p>
+
+          <p className="text-lg md:text-l font-light mb-8 px-2 text-gray-500">
+            We specialize in weddings, portraits, and lifestyle sessions turning life’s moments into everlasting memories.
           </p>
 
           <div className="flex flex-col md:flex-row gap-4 justify-center">
