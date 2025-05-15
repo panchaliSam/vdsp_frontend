@@ -1,19 +1,26 @@
 import React, { useEffect } from "react";
-import { createTheme, styled } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import DescriptionIcon from "@mui/icons-material/Description";
-import LayersIcon from "@mui/icons-material/Layers";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import PeopleIcon from '@mui/icons-material/People';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import LogoutIcon from "@mui/icons-material/Logout";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import PaymentIcon from '@mui/icons-material/Payment';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { PageContainer } from "@toolpad/core/PageContainer";
-import Grid from "@mui/material/Grid";
+import { Suspense } from "react";
+import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
+import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
+import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
+import PaymentHistory from "@app_components/customer/Payments/PaymentHistory";
 
 const demoTheme = createTheme({
   palette: {
@@ -51,17 +58,10 @@ function useDemoRouter(initialPath: string): Router {
   return router;
 }
 
-const Skeleton = styled("div")<{ height: number }>(({ theme, height }) => ({
-  backgroundColor: theme.palette.action.hover,
-  borderRadius: theme.shape.borderRadius,
-  height,
-  content: '" "',
-}));
-
 const NAVIGATION: Navigation = [
   {
     kind: "header",
-    title: "Main items",
+    title: "Dashboard Section",
   },
   {
     segment: "dashboard",
@@ -69,9 +69,48 @@ const NAVIGATION: Navigation = [
     icon: <DashboardIcon />,
   },
   {
-    segment: "orders",
-    title: "Orders",
-    icon: <ShoppingCartIcon />,
+    segment: "people",
+    title: "People",
+    icon: <  PeopleIcon />,
+  },
+  {
+    segment: "packages",
+    title: "Packages",
+    icon: <InventoryIcon />,
+  },
+  {
+    kind: "divider",
+  },
+  {
+    kind: "header",
+    title: "Event Section",
+  },
+  {
+    segment: "events",
+    title: "Events",
+    icon: <AssignmentTurnedInIcon />,
+  },
+  {
+    segment: "assignEvents",
+    title: "Assign Events",
+    icon: <EventAvailableIcon />,
+  },
+  {
+    kind: "divider",
+  },
+  {
+    kind: "header",
+    title: "Role Section",
+  },
+  {
+    segment: "roles",
+    title: "Roles",
+    icon: <CameraAltIcon />,
+  },
+  {
+    segment: "assignroles",
+    title: "Assign Roles",
+    icon: <AssignmentIndIcon />,
   },
   {
     kind: "divider",
@@ -81,26 +120,14 @@ const NAVIGATION: Navigation = [
     title: "Analytics",
   },
   {
-    segment: "reports",
-    title: "Reports",
-    icon: <BarChartIcon />,
-    children: [
-      {
-        segment: "sales",
-        title: "Sales",
-        icon: <DescriptionIcon />,
-      },
-      {
-        segment: "traffic",
-        title: "Traffic",
-        icon: <DescriptionIcon />,
-      },
-    ],
+    segment: "notifications",
+    title: "Notifications",
+    icon: <NotificationsIcon />,
   },
   {
-    segment: "integrations",
-    title: "Integrations",
-    icon: <LayersIcon />,
+    segment: "payments",
+    title: "Payments",
+    icon: <PaymentIcon />,
   },
   {
     kind: "divider",
@@ -117,11 +144,26 @@ export default function DashboardLayoutBasic(props: any) {
 
   const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
+
+  const renderContent = () => {
+    switch (router.pathname) {
+      case "/dashboard":
+        return <ApprovedReservations />;
+      case "/reservations":
+        return <CreateReservation />;
+      case "/payments":
+        return <PaymentHistory />;
+      case "/orders":
+        return <CreateReservation />;
+      default:
+        return <CreateReservation />;
+    }
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (router.pathname === "/logout") {
-      console.log("Logging out...");
       const performLogout = async () => {
         try {
           await logout();
@@ -148,43 +190,9 @@ export default function DashboardLayoutBasic(props: any) {
       window={demoWindow}
     >
       <DashboardLayout>
-        <PageContainer>
-          <Grid container spacing={1}>
-            <Grid size={5} />
-            <Grid size={12}>
-              <Skeleton height={14} />
-            </Grid>
-            <Grid size={12}>
-              <Skeleton height={14} />
-            </Grid>
-            <Grid size={4}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={8}>
-              <Skeleton height={100} />
-            </Grid>
-
-            <Grid size={12}>
-              <Skeleton height={150} />
-            </Grid>
-            <Grid size={12}>
-              <Skeleton height={14} />
-            </Grid>
-
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-            <Grid size={3}>
-              <Skeleton height={100} />
-            </Grid>
-          </Grid>
-        </PageContainer>
+        <Suspense fallback={<Typography>Loading...</Typography>}>
+          {renderContent()}
+        </Suspense>
       </DashboardLayout>
     </AppProvider>
   );
