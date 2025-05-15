@@ -18,9 +18,8 @@ import { Suspense } from "react";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
+import PeopleComponent from "@app_components/admin/People/ManageUsers";
 import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
-import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
-import PaymentHistory from "@app_components/customer/Payments/PaymentHistory";
 
 const demoTheme = createTheme({
   palette: {
@@ -147,14 +146,8 @@ export default function DashboardLayoutBasic(props: any) {
 
   const renderContent = () => {
     switch (router.pathname) {
-      case "/dashboard":
-        return <ApprovedReservations />;
-      case "/reservations":
-        return <CreateReservation />;
-      case "/payments":
-        return <PaymentHistory />;
-      case "/orders":
-        return <CreateReservation />;
+      case "/people":
+        return <PeopleComponent />;
       default:
         return <CreateReservation />;
     }
