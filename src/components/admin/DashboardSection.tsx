@@ -12,6 +12,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PaymentIcon from '@mui/icons-material/Payment';
 import logo from "@app_assets/logo/png/logo-no-background.png";
+import CollectionsIcon from '@mui/icons-material/Collections';
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
@@ -77,6 +78,33 @@ const NAVIGATION: Navigation = [
   {
     segment: "packages",
     title: "Packages",
+    icon: <InventoryIcon />,
+  },
+  {
+    segment: "gallery",
+    title: "Gallery",
+    icon: <CollectionsIcon />,
+  },
+  {
+    kind: "divider",
+  },
+  {
+    kind: "header",
+    title: "Reservation Section",
+  },
+  {
+    segment: "reservations",
+    title: "Reservations",
+    icon: <InventoryIcon />,
+  },
+  {
+    segment: "approveReservations",
+    title: "Approve Reservations",
+    icon: <CheckCircleIcon />,
+  },
+  {
+    segment: "manageReservations",
+    title: "Manage Reservations",
     icon: <InventoryIcon />,
   },
   {
