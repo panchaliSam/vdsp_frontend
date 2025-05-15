@@ -18,8 +18,8 @@ import { Suspense } from "react";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
-import PeopleComponent from "@app_components/admin/People/ManageUsers";
-import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
+import PeopleComponent from "@app_components/admin/Dashboard/ManageUsers";
+import PackageComponent from "@app_components/admin/Dashboard/ManagePackages";
 
 const demoTheme = createTheme({
   palette: {
@@ -148,8 +148,10 @@ export default function DashboardLayoutBasic(props: any) {
     switch (router.pathname) {
       case "/people":
         return <PeopleComponent />;
+      case "/packages":
+        return <PackageComponent />;
       default:
-        return <CreateReservation />;
+        return <PeopleComponent />;
     }
   };
 
