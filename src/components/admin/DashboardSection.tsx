@@ -26,6 +26,7 @@ import AdminReservationApprovals from "@app_components/admin/Approvals/Reservati
 import RoleComponent from "@app_components/admin/Role/ManageRoles";
 import StaffRoleAssign from "@app_components/admin/Role/ManageStaffRoles";
 import EventAlbumStatus from "@app_components/admin/Event/EventAlbumStatus";
+import EventStaffAssign from "@app_components/admin/Event/EventStaffAssign";
 
 const demoTheme = createTheme({
   palette: {
@@ -181,6 +182,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <StaffRoleAssign />;
       case "/events":
         return <EventAlbumStatus />;
+      case "/assignEvents":
+        return <EventStaffAssign />;
       default:
         return <PeopleComponent />;
     }
