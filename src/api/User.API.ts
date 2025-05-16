@@ -2,6 +2,9 @@ import axios from "axios";
 import type { LoginPayload } from "@app_interfaces/User/LoginPayload";
 import type { TokenResponse } from "@app_interfaces/User/TokenResponse";
 import type { UserDto } from "@app_interfaces/User/UserDto";
+import type { ApiResponse } from "@app_interfaces/Response/ApiResponse";
+import { handleApiResponse } from "@app_helper/Messages/handleApiResponse";
+import { toast } from "react-toastify";
 import {
   getRefreshToken,
   setTokens,
@@ -11,81 +14,88 @@ import {
 import axiosInstance from "@app_api/AxiosInstance";
 
 // Register User API
-export const registerUser = async (userData: UserDto): Promise<UserDto> => {
+export const registerUser = async (userData: UserDto): Promise<UserDto | null> => {
   try {
-    const response = await axiosInstance.post("/users/register", userData);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Registration failed. Please try again later.");
+    const response = await axiosInstance.post<ApiResponse<UserDto>>("/users/register", userData);
+    return handleApiResponse<UserDto>(response.data);
+  } catch (error: any) {
+    if (error.response?.data?.message) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Registration failed. Please try again.");
+    }
+    return null;
   }
 };
 
 // Login User API
-export const login = async (userData: LoginPayload): Promise<TokenResponse> => {
+
+export const login = async (userData: LoginPayload): Promise<TokenResponse | null> => {
   try {
-    const response = await axiosInstance.post("/users/login", userData);
-    const { access_token, refresh_token } = response.data;
+    const response = await axiosInstance.post<ApiResponse<TokenResponse>>("/users/login", userData);
 
-    console.log("L: Access Token:", access_token);
-    console.log("L: Refresh Token:", refresh_token);
+    const data = handleApiResponse<TokenResponse>(response.data);
 
-    setTokens(access_token, refresh_token);
+    if (data) {
+      setTokens(data.access_token, data.refresh_token);
+    }
 
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Login failed. Please check your credentials.");
+    return data;
+  } catch (error: any) {
+    if (error.response?.data?.message) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Login failed. Please check your credentials.");
+    }
+    return null;
   }
 };
 
 // Get All Users API (Admin only)
-export const getAllUsers = async (): Promise<UserDto[]> => {
+export const getAllUsers = async (): Promise<UserDto[] | null> => {
   try {
-    const response = await axiosInstance.get("/users/getAll");
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch users. Please try again later.");
+    const response = await axiosInstance.get<ApiResponse<UserDto[]>>("/users/getAll");
+    return handleApiResponse<UserDto[]>(response.data);
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Failed to fetch users.");
+    return null;
   }
 };
 
 // Get User by ID API
-export const getUserById = async (id: number): Promise<UserDto> => {
+export const getUserById = async (id: number): Promise<UserDto | null> => {
   try {
-    const response = await axiosInstance.get(`/users/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Failed to fetch user with ID ${id}.`);
+    const response = await axiosInstance.get<ApiResponse<UserDto>>(`/users/${id}`);
+    return handleApiResponse<UserDto>(response.data);
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || `Failed to fetch user with ID ${id}.`);
+    return null;
   }
 };
+
 
 // Update User API
 export const updateUser = async (
   id: number,
   updatedUser: UserDto
-): Promise<string> => {
+): Promise<boolean> => {
   try {
-    const response = await axiosInstance.put(
-      `/users/update/${id}`,
-      updatedUser
-    );
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Failed to update user with ID ${id}.`);
+    const response = await axiosInstance.put<ApiResponse<null>>(`/users/update/${id}`, updatedUser);
+    return handleApiResponse<null>(response.data) !== null;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || `Failed to update user with ID ${id}.`);
+    return false;
   }
 };
 
 // Delete User API
-export const deleteUser = async (id: number): Promise<string> => {
+export const deleteUser = async (id: number): Promise<boolean> => {
   try {
-    const response = await axiosInstance.delete(`/users/delete/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Failed to delete user with ID ${id}.`);
+    const response = await axiosInstance.delete<ApiResponse<null>>(`/users/delete/${id}`);
+    return handleApiResponse<null>(response.data) !== null;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || `Failed to delete user with ID ${id}.`);
+    return false;
   }
 };
 
@@ -129,24 +139,20 @@ export const refreshAccessToken = async (): Promise<string> => {
 };
 
 // Logout API
-export const logout = async (): Promise<void> => {
+export const logout = async (): Promise<boolean> => {
   try {
     const refreshToken = getRefreshToken();
     if (!refreshToken) throw new Error("No refresh token found.");
 
-    await axiosInstance.post("/users/logout", { refresh_token: refreshToken });
+    const response = await axiosInstance.post<ApiResponse<null>>("/users/logout", {
+      refresh_token: refreshToken,
+    });
+
     clearTokens();
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      console.error(
-        "Logout failed with server error:",
-        error.response.status,
-        error.response.data
-      );
-    } else {
-      console.error("Logout failed with client error:", error);
-    }
+    return handleApiResponse<null>(response.data) !== null;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Logout failed. Please try again.");
     clearTokens();
-    throw new Error("Logout failed. Please try again later.");
+    return false;
   }
 };

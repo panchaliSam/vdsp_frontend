@@ -38,7 +38,6 @@ const RegisterSection: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check if passwords match
     if (password !== confirmPassword) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -47,7 +46,6 @@ const RegisterSection: React.FC = () => {
       return;
     }
 
-    // Prepare user data for registration
     const userData = {
       firstName: capitalizeName(firstName),
       lastName: capitalizeName(lastName),
@@ -57,14 +55,9 @@ const RegisterSection: React.FC = () => {
       role,
     };
 
-    try {
-      await registerUser(userData);
-      alert("Registration successful!");
+    const registered = await registerUser(userData);
+    if (registered) {
       navigate("/login");
-    } catch (apiError: any) {
-      setErrors({
-        apiError: apiError.message || "Registration failed. Please try again.",
-      });
     }
   };
 

@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import type { LoginPayload } from "@app_interfaces/User/LoginPayload";
-import type { TokenResponse } from "@app_interfaces/User/TokenResponse";
 import type { Role } from "@app_interfaces/User/UserDto";
 import { useAuth } from "@app_context/AuthContext";
 
@@ -31,10 +30,8 @@ const LoginSection: React.FC = () => {
     const userData: LoginPayload = { email, password };
 
     try {
-      const response: TokenResponse = await login(userData);
+      const response = await login(userData);
       if (response?.access_token) {
-        alert("Login successful!");
-
         if (
           ["ROLE_ADMIN", "ROLE_STAFF", "ROLE_CUSTOMER"].includes(
             response.userDetails.role
