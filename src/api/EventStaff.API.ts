@@ -10,6 +10,7 @@ export const getAllEventStaff = async (): Promise<EventStaffDto[]> => {
 // Get assigned events for the logged-in staff
 export const getMyAssignedEvents = async (): Promise<EventStaffDto[]> => {
     const response = await axiosInstance.get("/eventStaff/my-events");
+    console.log("Assigned events:", response.data);
     return response.data;
 };
 
