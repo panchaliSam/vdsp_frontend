@@ -1,38 +1,39 @@
 import axiosInstance from "@app_api/AxiosInstance";
 import type { PackageDto } from "@app_interfaces/Package/PackageDto";
+import type { ApiResponse } from "@app_interfaces/Response/ApiResponse";
+import { handleApiResponse } from "@app_helper/Messages/handleApiResponse";
+import { toast } from "react-toastify";
 
 // Get all packages
-export const getAllPackages = async (): Promise<PackageDto[]> => {
+export const getAllPackages = async (): Promise<PackageDto[] | null> => {
     try {
-        const response = await axiosInstance.get("/packages");
-        return response.data;
-    } catch (error) {
-        console.error("Failed to fetch packages:", error);
-        throw new Error("Unable to fetch packages. Please try again later.");
+        const response = await axiosInstance.get<ApiResponse<PackageDto[]>>("/packages");
+        return handleApiResponse(response.data);
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || "Unable to fetch packages.");
+        return null;
     }
 };
 
 // Get package by ID
-export const getPackageById = async (id: number): Promise<PackageDto> => {
+export const getPackageById = async (id: number): Promise<PackageDto | null> => {
     try {
-        const response = await axiosInstance.get(`/packages/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error(`Failed to fetch package with ID ${id}:`, error);
-        throw new Error("Unable to fetch package.");
+        const response = await axiosInstance.get<ApiResponse<PackageDto>>(`/packages/${id}`);
+        return handleApiResponse(response.data);
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || `Unable to fetch package with ID ${id}.`);
+        return null;
     }
 };
 
 // Create a new package
-export const createPackage = async (
-    newPackage: PackageDto
-): Promise<PackageDto> => {
+export const createPackage = async (newPackage: PackageDto): Promise<PackageDto | null> => {
     try {
-        const response = await axiosInstance.post("/packages", newPackage);
-        return response.data;
-    } catch (error) {
-        console.error("Failed to create package:", error);
-        throw new Error("Package creation failed.");
+        const response = await axiosInstance.post<ApiResponse<PackageDto>>("/packages", newPackage);
+        return handleApiResponse(response.data);
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || "Package creation failed.");
+        return null;
     }
 };
 
@@ -40,21 +41,23 @@ export const createPackage = async (
 export const updatePackage = async (
     id: number,
     updatedData: Partial<PackageDto>
-): Promise<void> => {
+): Promise<boolean> => {
     try {
-        await axiosInstance.patch(`/packages/${id}`, updatedData);
-    } catch (error) {
-        console.error("Failed to update package:", error);
-        throw new Error("Package update failed.");
+        const response = await axiosInstance.patch<ApiResponse<null>>(`/packages/${id}`, updatedData);
+        return handleApiResponse(response.data) !== null;
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || "Package update failed.");
+        return false;
     }
 };
 
 // Delete package by ID
-export const deletePackage = async (id: number): Promise<void> => {
+export const deletePackage = async (id: number): Promise<boolean> => {
     try {
-        await axiosInstance.delete(`/packages/${id}`);
-    } catch (error) {
-        console.error("Failed to delete package:", error);
-        throw new Error("Package deletion failed.");
+        const response = await axiosInstance.delete<ApiResponse<null>>(`/packages/${id}`);
+        return handleApiResponse(response.data) !== null;
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || "Package deletion failed.");
+        return false;
     }
 };
