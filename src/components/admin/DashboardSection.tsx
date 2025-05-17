@@ -23,6 +23,10 @@ import { logout } from "@app_api/User.API";
 import PeopleComponent from "@app_components/admin/Dashboard/ManageUsers";
 import PackageComponent from "@app_components/admin/Dashboard/ManagePackages";
 import AdminReservationApprovals from "@app_components/admin/Approvals/ReservationApprovals";
+import RoleComponent from "@app_components/admin/Role/ManageRoles";
+import StaffRoleAssign from "@app_components/admin/Role/ManageStaffRoles";
+import EventAlbumStatus from "@app_components/admin/Event/EventAlbumStatus";
+import EventStaffAssign from "@app_components/admin/Event/EventStaffAssign";
 
 const demoTheme = createTheme({
   palette: {
@@ -91,28 +95,6 @@ const NAVIGATION: Navigation = [
   {
     kind: "header",
     title: "Reservation Section",
-  },
-  {
-    segment: "reservations",
-    title: "Reservations",
-    icon: <InventoryIcon />,
-  },
-  {
-    segment: "approveReservations",
-    title: "Approve Reservations",
-    icon: <CheckCircleIcon />,
-  },
-  {
-    segment: "manageReservations",
-    title: "Manage Reservations",
-    icon: <InventoryIcon />,
-  },
-  {
-    kind: "divider",
-  },
-  {
-    kind: "header",
-    title: "Approvals",
   },
   {
     segment: "approveReservations",
@@ -194,6 +176,14 @@ export default function DashboardLayoutBasic(props: any) {
         return <PackageComponent />;
       case "/approveReservations":
         return <AdminReservationApprovals />;
+      case "/roles":
+        return <RoleComponent />;
+      case "/assignroles":
+        return <StaffRoleAssign />;
+      case "/events":
+        return <EventAlbumStatus />;
+      case "/assignEvents":
+        return <EventStaffAssign />;
       default:
         return <PeopleComponent />;
     }

@@ -2,15 +2,9 @@ import React, { useEffect } from "react";
 import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import PeopleIcon from '@mui/icons-material/People';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import PaymentIcon from '@mui/icons-material/Payment';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import CollectionsIcon from '@mui/icons-material/Collections';
 import { AppProvider } from "@toolpad/core/AppProvider";
@@ -20,9 +14,9 @@ import { Suspense } from "react";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@app_api/User.API";
-import PeopleComponent from "@app_components/admin/Dashboard/ManageUsers";
-import PackageComponent from "@app_components/admin/Dashboard/ManagePackages";
-import AdminReservationApprovals from "@app_components/admin/Approvals/ReservationApprovals";
+import PackageComponent from "@app_components/staff/Dashboard/ManagePackages";
+import EventAlbumStatus from "@app_components/staff/Event/EventAlbumStatus";
+import MyEventAssignmentsCalendar from "@app_components/staff/Event/EventAssignmentsCalendar";
 
 const demoTheme = createTheme({
   palette: {
@@ -71,11 +65,6 @@ const NAVIGATION: Navigation = [
     icon: <DashboardIcon />,
   },
   {
-    segment: "people",
-    title: "People",
-    icon: <  PeopleIcon />,
-  },
-  {
     segment: "packages",
     title: "Packages",
     icon: <InventoryIcon />,
@@ -90,68 +79,12 @@ const NAVIGATION: Navigation = [
   },
   {
     kind: "header",
-    title: "Reservation Section",
-  },
-  {
-    segment: "reservations",
-    title: "Reservations",
-    icon: <InventoryIcon />,
-  },
-  {
-    segment: "approveReservations",
-    title: "Approve Reservations",
-    icon: <CheckCircleIcon />,
-  },
-  {
-    segment: "manageReservations",
-    title: "Manage Reservations",
-    icon: <InventoryIcon />,
-  },
-  {
-    kind: "divider",
-  },
-  {
-    kind: "header",
-    title: "Approvals",
-  },
-  {
-    segment: "approveReservations",
-    title: "Approve Reservations",
-    icon: <CheckCircleIcon />,
-  },
-  {
-    kind: "divider",
-  },
-  {
-    kind: "header",
     title: "Event Section",
   },
   {
     segment: "events",
     title: "Events",
     icon: <AssignmentTurnedInIcon />,
-  },
-  {
-    segment: "assignEvents",
-    title: "Assign Events",
-    icon: <EventAvailableIcon />,
-  },
-  {
-    kind: "divider",
-  },
-  {
-    kind: "header",
-    title: "Role Section",
-  },
-  {
-    segment: "roles",
-    title: "Roles",
-    icon: <CameraAltIcon />,
-  },
-  {
-    segment: "assignroles",
-    title: "Assign Roles",
-    icon: <AssignmentIndIcon />,
   },
   {
     kind: "divider",
@@ -164,11 +97,6 @@ const NAVIGATION: Navigation = [
     segment: "notifications",
     title: "Notifications",
     icon: <NotificationsIcon />,
-  },
-  {
-    segment: "payments",
-    title: "Payments",
-    icon: <PaymentIcon />,
   },
   {
     kind: "divider",
@@ -188,14 +116,14 @@ export default function DashboardLayoutBasic(props: any) {
 
   const renderContent = () => {
     switch (router.pathname) {
-      case "/people":
-        return <PeopleComponent />;
+      case "/dashboard":
+        return <MyEventAssignmentsCalendar />;
       case "/packages":
         return <PackageComponent />;
-      case "/approveReservations":
-        return <AdminReservationApprovals />;
+      case "/events":
+        return <EventAlbumStatus />;
       default:
-        return <PeopleComponent />;
+        return <PackageComponent />;
     }
   };
 

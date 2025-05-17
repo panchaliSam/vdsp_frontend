@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "@app_routes/ProtectedRoutes";
+import { ToastContainer } from "react-toastify";
 
 import HeroSection from "@app_pages/HeroSection";
 import LoginPage from "@app_pages/Login";
@@ -29,6 +30,15 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
       <Routes>
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={<LoginPage />} />

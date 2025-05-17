@@ -1,36 +1,32 @@
 import type { ReservationApprovalDto } from "@app_interfaces/Reservation/RservationApprovalDto";
-
+import type { ApiResponse } from "@app_interfaces/Response/ApiResponse";
 import axiosInstance from "@app_api/AxiosInstance";
+import { handleApiResponse } from "@app_helper/Messages/handleApiResponse";
+import { toast } from "react-toastify";
 
 // Get All Reservation Approvals API (Admin only)
-export const getAllReservationApprovals = async (): Promise<
-  ReservationApprovalDto[]
-> => {
+export const getAllReservationApprovals = async (): Promise<ReservationApprovalDto[] | null> => {
   try {
-    const response = await axiosInstance.get("/reservationApprovals/getAll");
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(
-      "Failed to fetch reservation approvals. Please try again later."
+    const response = await axiosInstance.get<ApiResponse<ReservationApprovalDto[]>>(
+      "/reservationApprovals/getAll"
     );
+    return handleApiResponse(response.data);
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Failed to fetch reservation approvals.");
+    return null;
   }
 };
 
 // Get Approved Reservations API (Customer only)
-export const getApprovedReservations = async (): Promise<
-  ReservationApprovalDto[]
-> => {
+export const getApprovedReservations = async (): Promise<ReservationApprovalDto[] | null> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await axiosInstance.get<ApiResponse<ReservationApprovalDto[]>>(
       "/reservationApprovals/reservationApproval"
     );
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(
-      "Failed to fetch approved reservations. Please try again later."
-    );
+    return handleApiResponse(response.data);
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Failed to fetch approved reservations.");
+    return null;
   }
 };
 
@@ -38,17 +34,15 @@ export const getApprovedReservations = async (): Promise<
 export const updateApprovalStatus = async (
   id: number,
   status: string
-): Promise<ReservationApprovalDto> => {
+): Promise<ReservationApprovalDto | null> => {
   try {
-    const response = await axiosInstance.patch(
+    const response = await axiosInstance.patch<ApiResponse<ReservationApprovalDto>>(
       `/reservationApprovals/${id}/status`,
       { status }
     );
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(
-      `Failed to update approval status for reservation with ID ${id}.`
-    );
+    return handleApiResponse(response.data);
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || `Failed to update status for reservation ID ${id}.`);
+    return null;
   }
 };
