@@ -106,13 +106,13 @@ export default function DashboardLayoutBasic(props: any) {
       case "/dashboard":
         return <ApprovedReservations />;
       case "/reservations":
-        return <CreateReservation />;
+        return <CreateReservation onSuccessNavigate={() => router.navigate("/dashboard")} />;
       case "/payments":
         return <PaymentHistory />;
       case "/orders":
-        return <CreateReservation />;
+        return <PaymentHistory />;
       default:
-        return <CreateReservation />;
+        return <ApprovedReservations />;
     }
   };
 

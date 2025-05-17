@@ -47,7 +47,7 @@ const ApprovedReservations: React.FC = () => {
     const fetchReservations = async () => {
       try {
         const data = await getApprovedReservations();
-        setReservations(data);
+        setReservations(data ?? []);
       } catch (err) {
         console.error(err);
         setError(
