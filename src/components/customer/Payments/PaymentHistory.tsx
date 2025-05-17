@@ -27,7 +27,12 @@ const PaymentHistory: React.FC = () => {
         const fetchPayments = async () => {
             try {
                 const history = await getPaymentHistory();
-                setPayments(history);
+                if (Array.isArray(history)) {
+                    setPayments(history);
+                } else {
+                    setPayments([]);
+                    setError("No payment history found.");
+                }
             } catch (err) {
                 setError("Failed to fetch payment history.");
             } finally {
