@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getMyAssignedEvents } from "@app_api/EventStaff.API";
-import type { EventStaffDto } from "@app_interfaces/EventStaff/EventStaffDto";
 import {
     Box,
     CircularProgress,
@@ -31,15 +30,11 @@ const MyEventAssignmentsCalendar: React.FC = () => {
     useEffect(() => {
         const fetchAssignedEvents = async () => {
             try {
-                const data: EventStaffDto[] = await getMyAssignedEvents();
-                console.log("Assigned events:", data);
+                const data = (await getMyAssignedEvents()) ?? []; // fallback to [] if null
 
                 const calendarEvents = data.map((item) => {
                     const res = item.eventDto?.reservationDetails;
                     const date = item.eventDto?.eventDate;
-
-                    console.log("Event date:", date); // should now show 2025-10-16
-                    console.log("Event start time:", res?.eventStartTime); // should now show 08:00:00
 
                     const start = moment(`${date}T${res?.eventStartTime}`).toDate();
                     const end = moment(`${date}T${res?.eventEndTime}`).toDate();
@@ -60,7 +55,6 @@ const MyEventAssignmentsCalendar: React.FC = () => {
                 setLoading(false);
             }
         };
-
         fetchAssignedEvents();
     }, []);
 
