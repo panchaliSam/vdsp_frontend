@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     getAllEventStaff,
     assignMultipleStaffByName,
@@ -17,27 +17,21 @@ import {
     TableHead,
     TableRow,
     Paper,
-    Select,
-    MenuItem,
-    Chip,
-    TextField,
     Box,
-    InputAdornment,
-    OutlinedInput,
-    Checkbox,
-    ListItemText,
+    TextField,
+    Chip,
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 
 const EventStaffAssign: React.FC = () => {
     const [eventStaffList, setEventStaffList] = useState<EventStaffDto[]>([]);
     const [staffList, setStaffList] = useState<StaffDto[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [selectedStaffNames, setSelectedStaffNames] = useState<Record<number, string[]>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedStaffNames, setSelectedStaffNames] = useState<{
-        [key: number]: string[];
-    }>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,18 +40,18 @@ const EventStaffAssign: React.FC = () => {
                     getAllEventStaff(),
                     getAllStaff(),
                 ]);
-                setEventStaffList(eventStaff || []);
-                setStaffList(staff || []);
+                const esList = eventStaff ?? [];
+                setEventStaffList(esList);
+                setStaffList(staff ?? []);
+                console.log("Fetched staffList:", staff);
 
-                // Initialize selected staff names for each event (if needed)
-                const initialSelections: { [key: number]: string[] } = {};
-                (eventStaff || []).forEach((es) => {
-                    if (es.staff) {
-                        const fullName = `${es.staff.firstName} ${es.staff.lastName}`;
-                        initialSelections[es.id] = [fullName];
-                    }
+                const initialSelection: Record<number, string[]> = {};
+                esList.forEach(es => {
+                    initialSelection[es.id] = es.staff
+                        ? [`${es.staff.firstName} ${es.staff.lastName}`]
+                        : [];
                 });
-                setSelectedStaffNames(initialSelections);
+                setSelectedStaffNames(initialSelection);
             } catch (err) {
                 setError("Failed to fetch data.");
             } finally {
@@ -67,32 +61,25 @@ const EventStaffAssign: React.FC = () => {
         fetchData();
     }, []);
 
-    const handleAssign = async (eventStaffId: number, staffNames: string[]) => {
-        const success = await assignMultipleStaffByName(eventStaffId, staffNames);
-        if (success) {
-            const updated = await getAllEventStaff();
-            setEventStaffList(updated || []);
+    const handleStaffChange = async (eventStaffId: number, names: string[]) => {
+        // Optimistically update UI
+        setSelectedStaffNames(prev => ({ ...prev, [eventStaffId]: names }));
+        try {
+            const success = await assignMultipleStaffByName(eventStaffId, names);
+            if (!success) {
+                console.error("Assignment failed on server.");
+            }
+        } catch (err) {
+            console.error("Failed to assign multiple staff:", err);
         }
     };
 
-    const handleStaffChange = (eventId: number, value: string[]) => {
-        setSelectedStaffNames((prev) => ({
-            ...prev,
-            [eventId]: value,
-        }));
-        handleAssign(eventId, value);
-    };
-
-    const filteredList = eventStaffList.filter((es) => {
+    const filteredList = eventStaffList.filter(es => {
         const query = searchQuery.toLowerCase();
-        const staffName = es.staff
-            ? `${es.staff.firstName} ${es.staff.lastName}`.toLowerCase()
-            : "";
-        const eventDate = es.eventDate?.toLowerCase();
-        return (
-            staffName.includes(query) ||
-            (eventDate && eventDate.includes(query))
-        );
+        const names = selectedStaffNames[es.id] ?? [];
+        const staffString = names.join(", ").toLowerCase();
+        const dateString = es.eventDate?.toLowerCase() ?? "";
+        return staffString.includes(query) || dateString.includes(query);
     });
 
     return (
@@ -102,7 +89,7 @@ const EventStaffAssign: React.FC = () => {
                     placeholder="Search by staff name or event date"
                     size="small"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={e => setSearchQuery(e.target.value)}
                     sx={{ width: 320 }}
                     InputProps={{
                         startAdornment: (
@@ -125,52 +112,55 @@ const EventStaffAssign: React.FC = () => {
                             <TableRow>
                                 <TableCell>ID</TableCell>
                                 <TableCell>Event Date</TableCell>
-                                <TableCell>Assign Staff</TableCell>
-                                <TableCell>Assignment Status</TableCell>
+                                <TableCell>Assigned Staff</TableCell>
+                                <TableCell>Status</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredList.map((es) => {
-                                const assigned = es.assignedAt !== null;
-                                const eventId = es.id;
-                                const selected = selectedStaffNames[eventId] || [];
-
+                            {filteredList.map(es => {
+                                const names = selectedStaffNames[es.id] ?? [];
+                                const assigned = names.length > 0;
                                 return (
-                                    <TableRow key={eventId}>
-                                        <TableCell>{eventId}</TableCell>
+                                    <TableRow key={es.id}>
+                                        <TableCell>{es.id}</TableCell>
                                         <TableCell>{es.eventDate}</TableCell>
-                                        <TableCell>
-                                            <Select
+                                        <TableCell sx={{ minWidth: 200 }}>
+                                            <Autocomplete
                                                 multiple
-                                                size="small"
-                                                value={selected}
-                                                onChange={(e) =>
-                                                    handleStaffChange(eventId, e.target.value as string[])
+                                                options={staffList.map(
+                                                    s => `${s.firstName} ${s.lastName}`
+                                                )}
+                                                value={names}
+                                                onChange={(
+                                                    _event: React.SyntheticEvent<Element, Event>,
+                                                    value: string[]
+                                                ) => handleStaffChange(es.id, value)}
+                                                filterSelectedOptions
+                                                renderTags={(value, getTagProps) =>
+                                                    value.map((option, idx) => (
+                                                        <Chip
+                                                            {...getTagProps({ index: idx })}
+                                                            key={option}
+                                                            label={option}
+                                                            size="small"
+                                                        />
+                                                    ))
                                                 }
-                                                input={<OutlinedInput />}
-                                                renderValue={(selected) => selected.join(", ")}
-                                                fullWidth
-                                            >
-                                                {staffList.map((staff) => {
-                                                    const fullName = `${staff.firstName} ${staff.lastName}`;
-                                                    return (
-                                                        <MenuItem key={staff.id} value={fullName}>
-                                                            <Checkbox
-                                                                checked={selected.includes(fullName)}
-                                                            />
-                                                            <ListItemText primary={fullName} />
-                                                        </MenuItem>
-                                                    );
-                                                })}
-                                            </Select>
+                                                renderInput={params => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant="outlined"
+                                                        placeholder="Select Staff"
+                                                        size="small"
+                                                    />
+                                                )}
+                                            />
                                         </TableCell>
                                         <TableCell>
                                             <Chip
                                                 label={
                                                     assigned
-                                                        ? `Assigned at ${new Date(
-                                                            es.assignedAt!
-                                                        ).toLocaleString()}`
+                                                        ? `${names.length} assigned`
                                                         : "Not Assigned"
                                                 }
                                                 color={assigned ? "success" : "warning"}
