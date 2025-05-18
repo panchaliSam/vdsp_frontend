@@ -16,6 +16,7 @@ import { logout } from "@app_api/User.API";
 import CreateReservation from "@app_components/customer/Reservations/CreateReservation";
 import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
 import PaymentHistory from "@app_components/customer/Payments/PaymentHistory";
+import MyNotifications from "@app_components/customer/Notifications/MyNotifications";
 
 const demoTheme = createTheme({
   palette: {
@@ -109,8 +110,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <CreateReservation onSuccessNavigate={() => router.navigate("/dashboard")} />;
       case "/payments":
         return <PaymentHistory />;
-      case "/orders":
-        return <PaymentHistory />;
+      case "/notifications":
+        return <MyNotifications />;
       default:
         return <ApprovedReservations />;
     }
