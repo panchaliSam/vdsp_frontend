@@ -41,7 +41,7 @@ axiosInstance.interceptors.response.use(
       toast.success(envelope.message, { duration: 2000, position: "bottom-right" })
       return { ...response, data: envelope.data }
     } else {
-      toast.error(envelope.message)
+      toast.error(envelope.message, { duration: 2000, position: "bottom-right" })
       return Promise.reject(new Error(envelope.message))
     }
   }, async (error) => {
@@ -81,12 +81,12 @@ axiosInstance.interceptors.response.use(
 
         return axiosInstance(originalRequest);
       } catch (error) {
-        toast.error("Failed to refresh access token")
-        return Promise.reject(error); // if refreshToken() fails
+        console.error("Error:", error);
+        clearTokens();
       }
     }
 
-    toast.error("Failed to refresh access token")
+    toast.error(error.message, { duration: 2000, position: "bottom-right" })
     return Promise.reject(error.message);
   }
 );
