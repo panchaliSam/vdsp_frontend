@@ -12,6 +12,7 @@ import { CustomerDashboard } from "@app_pages/customer/Dashboard";
 import { StaffDashboard } from "@app_pages/staff/Dashboard";
 import { CustomerProceedPayment } from "@app_pages/customer/ProceedPayment";
 import { Toaster } from "react-hot-toast";
+import Gallery from "@app_pages/Gallery";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +26,7 @@ const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HeroSection />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route
