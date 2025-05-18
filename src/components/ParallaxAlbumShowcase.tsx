@@ -17,17 +17,16 @@ const ParallaxAlbumShowcase: React.FC = () => (
     sx={{
       width: '100%',
       overflow: 'hidden',
-      py: 4,
-      background: 'linear-gradient(90deg, #222 60%, #111 100%)',
-      boxShadow: 3,
+      py: { xs: 2, md: 4 },
       position: 'relative',
+      zIndex: 2,
     }}
   >
     <Box
       sx={{
         display: 'flex',
-        gap: 4,
-        px: 4,
+        gap: { xs: 2, md: 4 },
+        px: { xs: 1, md: 4 },
         animation: `scroll-left ${animationDuration}s linear infinite`,
         '@keyframes scroll-left': {
           '0%': { transform: 'translateX(0)' },
@@ -36,21 +35,25 @@ const ParallaxAlbumShowcase: React.FC = () => (
         width: 'max-content',
       }}
     >
-      {/* Duplicate albums for seamless loop */}
       {[...albums, ...albums].map((album, idx) => (
         <Box
           key={album.id + '-' + idx}
           sx={{
-            minWidth: 280,
-            maxWidth: 320,
-            borderRadius: 3,
+            minWidth: { xs: 180, sm: 240, md: 320 },
+            maxWidth: { xs: 200, sm: 260, md: 340 },
+            borderRadius: 4,
             overflow: 'hidden',
-            boxShadow: 2,
-            background: '#181818',
-            transition: 'transform 0.3s',
+            boxShadow: 6,
+            position: 'relative',
+            mx: 1,
+            background: 'rgba(30,30,30,0.35)',
+            backdropFilter: 'blur(8px)',
+            border: '1.5px solid rgba(255,255,255,0.15)',
+            transition: 'transform 0.3s, box-shadow 0.3s',
             '&:hover': {
-              transform: 'scale(1.04)'
-            }
+              transform: 'scale(1.04)',
+              boxShadow: 12,
+            },
           }}
         >
           <img
@@ -58,9 +61,26 @@ const ParallaxAlbumShowcase: React.FC = () => (
             alt={album.title}
             style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
           />
-          <Typography variant="subtitle1" align="center" color="#fff" py={1}>
-            {album.title}
-          </Typography>
+          {/* Gradient overlay for title */}
+          <Box
+            sx={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 48,
+              background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(20,20,20,0.85) 100%)',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+              px: 1,
+              pb: 1,
+            }}
+          >
+            <Typography variant="subtitle1" align="center" color="#fff" fontWeight={600} sx={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>
+              {album.title}
+            </Typography>
+          </Box>
         </Box>
       ))}
     </Box>
