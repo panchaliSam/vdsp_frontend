@@ -307,10 +307,18 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
           shouldDisableDate={(date) => {
             const d = format(date, "yyyy-MM-dd");
 
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const selected = new Date(date);
+            selected.setHours(0, 0, 0, 0);
+
             const isHoliday = calendarData?.holidays.some(h => h.date === d);
             const isApprovedFullDay = calendarData?.approvedEventDatesWithSessionType.filter(e => e.eventDate === d).length === 2;
 
-            return isHoliday || isApprovedFullDay;
+            const isPastOrToday = selected <= today;
+
+            return Boolean(isHoliday) || isApprovedFullDay || isPastOrToday;
           }}
           slots={{
             day: (props) => {
@@ -329,6 +337,7 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
                     : approvedSessions.length === 1
                       ? `Approved ${approvedSessions[0].sessionType.toLowerCase()} session`
                       : "";
+
 
               return (
                 <Tooltip title={tooltip}>
