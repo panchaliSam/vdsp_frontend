@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import HeroSectionImage from '@app_assets/HeroSection/HeroSection.jpg';
 
 const albums = [
   { id: 1, title: 'Wedding Bliss', img: 'https://picsum.photos/id/1015/320/180' },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "@app_routes/ProtectedRoutes";
 
@@ -6,7 +6,6 @@ import HeroSection from "@app_pages/HeroSection";
 import LoginPage from "@app_pages/Login";
 import RegisterPage from "@app_pages/Register";
 import NotFoundPage from "@app_pages/404";
-import LoadingPage from "@app_pages/LoadingPage";
 import { AdminDashboard } from "@app_pages/admin/Dashboard";
 import { CustomerDashboard } from "@app_pages/customer/Dashboard";
 import { StaffDashboard } from "@app_pages/staff/Dashboard";
@@ -15,8 +14,6 @@ import { Toaster } from "react-hot-toast";
 import Gallery from "@app_pages/Gallery";
 
 const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
   return (
     <>
       <Toaster
