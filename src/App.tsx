@@ -11,6 +11,7 @@ import { AdminDashboard } from "@app_pages/admin/Dashboard";
 import { CustomerDashboard } from "@app_pages/customer/Dashboard";
 import { StaffDashboard } from "@app_pages/staff/Dashboard";
 import { CustomerProceedPayment } from "@app_pages/customer/ProceedPayment";
+import { Toaster } from "react-hot-toast";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +29,11 @@ const App: React.FC = () => {
   }
 
   return (
+
     <BrowserRouter>
+      <Toaster
+        position="bottom-right"
+        reverseOrder={true} />
       <Routes>
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={<LoginPage />} />

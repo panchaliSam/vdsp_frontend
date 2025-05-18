@@ -22,6 +22,8 @@ import { PickersDay } from "@mui/x-date-pickers";
 import { format } from "date-fns";
 
 import { createReservation } from "@app_api/Reservation.API";
+import { getAllPackages, getPackageById } from "@app_api/Package.API";
+import type { PackageDto } from "@app_interfaces/Package/PackageDto";
 import type { ReservationDto } from "@app_interfaces/Reservation/ReservationDto";
 import { getCalendarDates } from "@app_api/Calendar.API";
 import type { CalendarDatesResponse } from "@app_interfaces/Calendar/CalendarDatesResponse";
@@ -45,8 +47,9 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
   const [eventDate, setEventDate] = useState<Date | null>(new Date());
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
-  const [packageName, setPackageName] = useState<string>("");
+  const [packageId, setPackageId] = useState<number | "">("");
   const [eventLocation, setEventLocation] = useState<string>("");
+  const [packages, setPackages] = useState<PackageDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [packageInfoOpen, setPackageInfoOpen] = useState(false);
@@ -85,7 +88,7 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
     }
 
     if (startTime >= endTime) {
-      alert("Start time must be before end time.");
+      setErrorMsg("Start time must be before end time.");
       return;
     }
 
@@ -103,15 +106,16 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
 
     const reservationData: ReservationDto = {
       eventType: EventType[eventType as keyof typeof EventType],
-      eventDate: eventDate ? formatToLocalDate(eventDate) : "",
-      eventStartTime: startTime ? formatToTime(startTime) : "",
-      eventEndTime: endTime ? formatToTime(endTime) : "",
-      packageName: packageName,
+      eventDate: formatToLocalDate(eventDate),
+      eventStartTime: formatToTime(startTime),
+      eventEndTime: formatToTime(endTime),
+      packageId: packageId as number,
+      packageName: selectedPackage?.name || "",
+      priceAmount: selectedPackage?.price?.toString() || "",
       eventLocation,
     };
 
     setLoading(true);
-
     try {
       await createReservation(reservationData);
       setSuccessModalOpen(true);
@@ -161,10 +165,11 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
             }}
             label="Event Type"
           >
-            <MenuItem value={EventType.WEDDING}>Wedding</MenuItem>
-            <MenuItem value={EventType.BIRTHDAY}>Birthday</MenuItem>
-            <MenuItem value={EventType.GRADUATION}>Graduation</MenuItem>
-            <MenuItem value={EventType.CORPORATE}>Corporate</MenuItem>
+            {Object.values(EventType).map((et) => (
+              <MenuItem key={et} value={et}>
+                {et.charAt(0) + et.slice(1).toLowerCase()}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
@@ -269,8 +274,9 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
 
         {/* Event Location */}
         <TextField
-          label="Event Location (Google Maps URL)"
+          label="Event Location (Google Maps Link)"
           variant="outlined"
+          type="url"
           value={eventLocation}
           onChange={(e) => setEventLocation(e.target.value)}
           required
@@ -323,19 +329,19 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
           slots={{
             day: (props) => {
               const d = format(props.day, "yyyy-MM-dd");
-              // const isToday = format(new Date(), "yyyy-MM-dd") === d;
+
               const approvedSessions = calendarData?.approvedEventDatesWithSessionType.filter(e => e.eventDate === d) || [];
               const pendingSessions = calendarData?.pendingEventDatesWithSessionType.filter(e => e.eventDate === d) || [];
               const holiday = calendarData?.holidays.find(h => h.date === d);
 
-              const tooltip = holiday
-                ? `Holiday – ${holiday.name}`
+               const tooltip = holiday
+                ? `Holiday - ${holiday.name}`
                 : approvedSessions.length === 2
                   ? "Fully booked – Reservation not available"
                   : pendingSessions.length
                     ? "Pending reservation – may not approve"
                     : approvedSessions.length === 1
-                      ? `Approved ${approvedSessions[0].sessionType.toLowerCase()} session`
+                      ? `Approved ${approvedSessions[0].sessionType.toLowerCase().replace("_"," ")} session`
                       : "";
 
 
@@ -379,6 +385,7 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
           }}
           slotProps={{
             textField: {
+              required: true,
               sx: {
                 input: { color: "white" },
                 "& .MuiOutlinedInput-root": {
@@ -479,9 +486,9 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
           </button>
           <button
             onClick={handleSubmit}
+            disabled={loading}
             className={`bg-white text-black px-4 py-2 rounded border border-gray-300 ${loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
-            disabled={loading}
           >
             {loading ? "Submitting..." : "Submit"}
           </button>

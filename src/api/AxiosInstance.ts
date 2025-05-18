@@ -1,11 +1,14 @@
 import axios from "axios";
+import toast from "react-hot-toast"
 import { refreshAccessToken } from "@app_api/User.API";
 import { getAccessToken, clearTokens } from "@app_api/helper/TokenHelper";
+import type { ApiResponse } from "@app_interfaces/General/ApiResponse";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
+// Reuquest Interceptor - Adapt
 axiosInstance.interceptors.request.use(
   (config) => {
 
@@ -27,9 +30,23 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Response Interceptor - Response Handler
 axiosInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  (response) => {
+    // Handle 2xx responses
+    const envelope = response.data as ApiResponse<unknown>
+    console.log("Response Envelope:", envelope.message);
+
+    if (envelope.success) {
+      toast.success(envelope.message,{ duration: 2000, position: "bottom-right" })
+      return { ...response, data: envelope.data }
+    } else {
+      toast.error("Failed to refresh access token")
+      return Promise.reject(new Error(envelope.message))
+    }
+  }, async (error) => {
+    // Handle 4xx and 5xx responses
+
     const originalRequest = error.config;
 
     if (originalRequest.url.includes("/users/refresh")) {
@@ -61,13 +78,15 @@ axiosInstance.interceptors.response.use(
 
 
         console.log("Token refreshed successfully");
-
+        
         return axiosInstance(originalRequest);
       } catch (error) {
+        toast.error("Failed to refresh access token")
         return Promise.reject(error); // if refreshToken() fails
       }
     }
 
+    toast.error("Failed to refresh access token")
     return Promise.reject(error);
   }
 );
