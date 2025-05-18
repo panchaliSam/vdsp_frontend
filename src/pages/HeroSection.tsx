@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "@app_assets/logo/svg/logo-no-background.svg";
 import HeroSectionImageJpg from "@app_assets/HeroSection/HeroSection.jpg";
+import BookIcon from "@mui/icons-material/Book";
 
 const kineticTagline = [
   "Capturing Stories",
@@ -45,9 +46,11 @@ const HeroSection = () => {
   const animatedCategories = [...categories, ...categories];
 
   return (
-    <div className="relative min-h-screen w-full font-urbanist flex flex-col items-center justify-center overflow-hidden hero">
+    <div className="relative min-h-screen w-full font-urbanist flex flex-col items-center justify-center overflow-hidden hero"
+    >
       {/* Fixed, always visible hero background image */}
-      <div className="fixed inset-0 -z-10 w-full h-full">
+      <div className="fixed inset-0 -z-10 w-full h-full"
+      draggable={false}>
         <img
           src={HeroSectionImageJpg}
           alt="Lens Macro Hero"
@@ -83,25 +86,24 @@ const HeroSection = () => {
           ))}
         </h1>
         <p className="mt-6 text-xl md:text-2xl text-white text-center">
-          Welcome to <span className="relative" style={{ color: '#f7d501' }}>
+          Welcome to <span className="relative" style={{ color: '#f7d501'}}>
             Vidura De Silva Photography
-            <span className="absolute -bottom-2 left-0 w-full h-[3px]" style={{ backgroundColor: '#f7d501', opacity: 0.8, borderRadius: '9999px' }}></span>
           </span>, a professional studio.
         </p>
         <div className="mt-12 flex flex-col sm:flex-row gap-4 sm:gap-6">
           <button
             onClick={handleGallery}
-            className="cta-solid focus-ring-cyan motion-safe:active:scale-95"
+            className="cta-ghost focus-ring-cyan motion-safe:active:scale-95 text-white"
             aria-label="View Gallery"
-            style={{ background: 'rgba(247, 213, 1, 0.2)' }}
           >
             View Gallery
           </button>
           <button
             onClick={handleSignIn}
-            className="cta-ghost focus-ring-cyan motion-safe:active:scale-95"
+            className="cta-solid focus-ring-cyan motion-safe:active:scale-95 text-white bg-gradient-to-br from-[#F8BE00] to-[#FFD700] shadow-lg flex items-center gap-2"
             aria-label="Book a Session"
           >
+            <BookIcon className="w-6 h-6" />
             Book a Session
           </button>
         </div>

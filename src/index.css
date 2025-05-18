@@ -14,7 +14,7 @@
 @layer base {
   body {
     font-family: 'InterVariable', 'Inter', 'Urbanist', sans-serif;
-    color: rgba(229,230,231,0.85);
+    color: rgba(0, 0, 0, 0.85);
     line-height: 1.4;
   }
 }
@@ -54,7 +54,7 @@
   .cta-solid {
     @apply relative inline-flex items-center justify-center px-8 py-4 font-semibold tracking-wide shadow-lg rounded-xl transition-all duration-150 ease-out hover:brightness-110 active:scale-95;
     background: linear-gradient(90deg, #f7d501 0%, #f7d501 100%);
-    color: #fff;
+    color: #000000;
   }
   .cta-ghost {
     @apply inline-flex items-center justify-center px-8 py-4 font-semibold tracking-wide rounded-xl active:scale-95 transition-all duration-150 ease-out;
