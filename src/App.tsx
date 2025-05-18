@@ -16,18 +16,6 @@ import { Toaster } from "react-hot-toast";
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <LoadingPage />;
-  }
-
   return (
     <>
       <Toaster
