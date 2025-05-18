@@ -33,6 +33,13 @@ axiosInstance.interceptors.request.use(
 // Response Interceptor - Response Handler
 axiosInstance.interceptors.response.use(
   (response) => {
+
+    // Skip handling for OPTIONS requests
+    // OPTIONS requests are typically used for CORS preflight checks
+    if (response.config.method?.toUpperCase() === "OPTIONS") {
+      return response;
+    }
+
     // Handle 2xx responses
     const envelope = response.data as ApiResponse<unknown>
     console.log("Response Envelope:", envelope.message);
@@ -52,9 +59,7 @@ axiosInstance.interceptors.response.use(
     if (originalRequest.url.includes("/users/refresh")) {
 
       if (error.response?.status === 401) {
-        console.error("Refresh token expired or invalid.");
         clearTokens();
-
       } else {
         // Handle refresh token expiration
         return Promise.resolve();

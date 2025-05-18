@@ -29,72 +29,74 @@ const App: React.FC = () => {
   }
 
   return (
-
-    <BrowserRouter>
+    <>
       <Toaster
         position="bottom-right"
-        reverseOrder={true} />
-      <Routes>
-        <Route path="/" element={<HeroSection />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute
-              component={AdminDashboard}
-              allowedRoles={["ROLE_ADMIN"]}
-            />
-          }
-        />
-        <Route
-          path="/customer"
-          element={
-            <ProtectedRoute
-              component={CustomerDashboard}
-              allowedRoles={["ROLE_CUSTOMER"]}
-            />
-          }
-        />
-        <Route
-          path="/payment"
-          element={
-            <ProtectedRoute
-              component={CustomerProceedPayment}
-              allowedRoles={["ROLE_CUSTOMER"]}
-            />
-          }
-        />
-        <Route
-          path="/payment/cancel"
-          element={
-            <ProtectedRoute
-              component={() => <Navigate to="/customer" replace />}
-              allowedRoles={["ROLE_CUSTOMER"]}
-            />
-          }
-        />
-        <Route
-          path="/payment/return"
-          element={
-            <ProtectedRoute
-              component={() => <Navigate to="/customer" replace />}
-              allowedRoles={["ROLE_CUSTOMER"]}
-            />
-          }
-        />
-        <Route
-          path="/staff"
-          element={
-            <ProtectedRoute
-              component={StaffDashboard}
-              allowedRoles={["ROLE_STAFF"]}
-            />
-          }
-        />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+        reverseOrder={true}
+      />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HeroSection />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute
+                component={AdminDashboard}
+                allowedRoles={["ROLE_ADMIN"]}
+              />
+            }
+          />
+          <Route
+            path="/customer"
+            element={
+              <ProtectedRoute
+                component={CustomerDashboard}
+                allowedRoles={["ROLE_CUSTOMER"]}
+              />
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute
+                component={CustomerProceedPayment}
+                allowedRoles={["ROLE_CUSTOMER"]}
+              />
+            }
+          />
+          <Route
+            path="/payment/cancel"
+            element={
+              <ProtectedRoute
+                component={() => <Navigate to="/customer" replace />}
+                allowedRoles={["ROLE_CUSTOMER"]}
+              />
+            }
+          />
+          <Route
+            path="/payment/return"
+            element={
+              <ProtectedRoute
+                component={() => <Navigate to="/customer" replace />}
+                allowedRoles={["ROLE_CUSTOMER"]}
+              />
+            }
+          />
+          <Route
+            path="/staff"
+            element={
+              <ProtectedRoute
+                component={StaffDashboard}
+                allowedRoles={["ROLE_STAFF"]}
+              />
+            }
+          />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 };
 
