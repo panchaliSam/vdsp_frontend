@@ -30,10 +30,10 @@ const HeroSection = () => {
           { opacity: 0, transform: 'translateY(40px)' },
           { opacity: 1, transform: 'translateY(0)' }
         ], {
-          duration: 600,
+          duration: 1500,
           delay: i * 180,
           fill: 'forwards',
-          easing: 'cubic-bezier(.5,1.5,.5,1)'
+          easing: 'cubic-bezier(0.42,0,0.58,1)'
         });
       });
     }
@@ -68,7 +68,7 @@ const HeroSection = () => {
         </div>
         <button
           onClick={handleSignIn}
-          className="px-6 py-2 rounded-full font-medium shadow-lg transition-all bg-[#f7d501] text-white hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f7d501]/70"
+          className="px-6 py-2 rounded-full font-medium shadow-lg transition-all bg-[#f7d501] text-black hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f7d501]/70"
         >
           Sign In
         </button>
@@ -82,7 +82,7 @@ const HeroSection = () => {
           aria-label="Capturing Stories in Every Frame"
         >
           {kineticTagline.map((line, i) => (
-            <span key={i} className="block">{line}{i === 0 && <br className="md:hidden" />}</span>
+            <span key={i} className="block" style={{ opacity: 0 }}>{line}{i === 0 && <br className="md:hidden" />}</span>
           ))}
         </h1>
         <p className="mt-6 text-xl md:text-2xl text-white text-center">
@@ -100,10 +100,10 @@ const HeroSection = () => {
           </button>
           <button
             onClick={handleSignIn}
-            className="cta-solid focus-ring-cyan motion-safe:active:scale-95 text-white bg-gradient-to-br from-[#F8BE00] to-[#FFD700] shadow-lg flex items-center gap-2"
+            className="cta-solid focus-ring-cyan motion-safe:active:scale-95 text-black bg-gradient-to-br from-[#F8BE00] to-[#FFD700] shadow-lg flex items-center gap-2"
             aria-label="Book a Session"
           >
-            <BookIcon className="w-6 h-6" />
+            <BookIcon className="w-6 h-6 text-black" />
             Book a Session
           </button>
         </div>
