@@ -13,11 +13,10 @@ export const generateHash = async (
       "/payment/generate-hash",
       reservation
     );
-    console.log("Reservation created successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to create reservation. Please try again later.");
+    throw new Error("Failed to create payment. Please try again later.");
   }
 };
 
