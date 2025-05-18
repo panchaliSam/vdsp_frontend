@@ -15,18 +15,32 @@ export const getMyAssignedEvents = async (): Promise<EventStaffDto[]> => {
 };
 
 // Get event-staff assignment by ID
-export const getEventStaffById = async (id: number): Promise<EventStaffDto> => {
-    const response = await axiosInstance.get(`/eventStaff/${id}`);
-    return response.data;
+export const getEventStaffById = async (id: number): Promise<EventStaffDto | null> => {
+    try {
+        const response = await axiosInstance.get<ApiResponse<EventStaffDto>>(`/eventStaff/${id}`);
+        return handleApiResponse(response.data);
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || `Failed to fetch event-staff assignment with ID ${id}.`);
+        return null;
+    }
 };
 
-// Assign staff by full name (admin only)
-export const assignStaffByName = async (
+// Assign multiple staff by full names (admin only)
+export const assignMultipleStaffByName = async (
     id: number,
-    staffName: string
-): Promise<EventStaffDto> => {
-    const response = await axiosInstance.patch(`/eventStaff/${id}/assignByName`, { staffName });
-    return response.data;
+    staffNames: string[]
+): Promise<boolean> => {
+    try {
+        const response = await axiosInstance.patch<ApiResponse<string>>(
+            `/eventStaff/${id}/assignByName`,
+            { staffNames }
+        );
+        toast.success(response.data.message);
+        return true;
+    } catch (error: any) {
+        toast.error(error.response?.data?.message || `Failed to assign multiple staff to event ID ${id}.`);
+        return false;
+    }
 };
 
 // Delete assignment (admin only)

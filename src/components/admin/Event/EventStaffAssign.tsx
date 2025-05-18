@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     getAllEventStaff,
-    assignStaffByName,
+    assignMultipleStaffByName,
 } from "@app_api/EventStaff.API";
 import { getAllStaff } from "@app_api/Staff.API";
 import type { EventStaffDto } from "@app_interfaces/EventStaff/EventStaffDto";
@@ -23,6 +23,9 @@ import {
     TextField,
     Box,
     InputAdornment,
+    OutlinedInput,
+    Checkbox,
+    ListItemText,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -32,6 +35,9 @@ const EventStaffAssign: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedStaffNames, setSelectedStaffNames] = useState<{
+        [key: number]: string[];
+    }>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,8 +46,18 @@ const EventStaffAssign: React.FC = () => {
                     getAllEventStaff(),
                     getAllStaff(),
                 ]);
-                setEventStaffList(eventStaff);
-                setStaffList(staff);
+                setEventStaffList(eventStaff || []);
+                setStaffList(staff || []);
+
+                // Initialize selected staff names for each event (if needed)
+                const initialSelections: { [key: number]: string[] } = {};
+                (eventStaff || []).forEach((es) => {
+                    if (es.staff) {
+                        const fullName = `${es.staff.firstName} ${es.staff.lastName}`;
+                        initialSelections[es.id] = [fullName];
+                    }
+                });
+                setSelectedStaffNames(initialSelections);
             } catch (err) {
                 setError("Failed to fetch data.");
             } finally {
@@ -51,15 +67,20 @@ const EventStaffAssign: React.FC = () => {
         fetchData();
     }, []);
 
-    const handleAssign = async (eventStaffId: number, staffName: string) => {
-        try {
-            const updated = await assignStaffByName(eventStaffId, staffName);
-            setEventStaffList((prev) =>
-                prev.map((es) => (es.id === updated.id ? updated : es))
-            );
-        } catch (err) {
-            console.error("Failed to assign staff:", err);
+    const handleAssign = async (eventStaffId: number, staffNames: string[]) => {
+        const success = await assignMultipleStaffByName(eventStaffId, staffNames);
+        if (success) {
+            const updated = await getAllEventStaff();
+            setEventStaffList(updated || []);
         }
+    };
+
+    const handleStaffChange = (eventId: number, value: string[]) => {
+        setSelectedStaffNames((prev) => ({
+            ...prev,
+            [eventId]: value,
+        }));
+        handleAssign(eventId, value);
     };
 
     const filteredList = eventStaffList.filter((es) => {
@@ -67,7 +88,7 @@ const EventStaffAssign: React.FC = () => {
         const staffName = es.staff
             ? `${es.staff.firstName} ${es.staff.lastName}`.toLowerCase()
             : "";
-        const eventDate = es.eventDate?.toString().toLowerCase();
+        const eventDate = es.eventDate?.toLowerCase();
         return (
             staffName.includes(query) ||
             (eventDate && eventDate.includes(query))
@@ -104,47 +125,43 @@ const EventStaffAssign: React.FC = () => {
                             <TableRow>
                                 <TableCell>ID</TableCell>
                                 <TableCell>Event Date</TableCell>
-                                <TableCell>Assigned Staff</TableCell>
+                                <TableCell>Assign Staff</TableCell>
                                 <TableCell>Assignment Status</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {filteredList.map((es) => {
-                                const assigned =
-                                    es.staff &&
-                                    es.staff.firstName &&
-                                    es.staff.lastName &&
-                                    es.assignedAt;
-
-                                const staffValue = es.staff
-                                    ? `${es.staff.firstName} ${es.staff.lastName}`
-                                    : "";
+                                const assigned = es.assignedAt !== null;
+                                const eventId = es.id;
+                                const selected = selectedStaffNames[eventId] || [];
 
                                 return (
-                                    <TableRow key={es.id}>
-                                        <TableCell>{es.id}</TableCell>
+                                    <TableRow key={eventId}>
+                                        <TableCell>{eventId}</TableCell>
                                         <TableCell>{es.eventDate}</TableCell>
                                         <TableCell>
                                             <Select
+                                                multiple
                                                 size="small"
-                                                value={staffValue}
+                                                value={selected}
                                                 onChange={(e) =>
-                                                    handleAssign(es.id, e.target.value as string)
+                                                    handleStaffChange(eventId, e.target.value as string[])
                                                 }
-                                                displayEmpty
+                                                input={<OutlinedInput />}
+                                                renderValue={(selected) => selected.join(", ")}
                                                 fullWidth
                                             >
-                                                <MenuItem disabled value="">
-                                                    Select Staff
-                                                </MenuItem>
-                                                {staffList.map((staff) => (
-                                                    <MenuItem
-                                                        key={staff.id}
-                                                        value={`${staff.firstName} ${staff.lastName}`}
-                                                    >
-                                                        {staff.firstName} {staff.lastName}
-                                                    </MenuItem>
-                                                ))}
+                                                {staffList.map((staff) => {
+                                                    const fullName = `${staff.firstName} ${staff.lastName}`;
+                                                    return (
+                                                        <MenuItem key={staff.id} value={fullName}>
+                                                            <Checkbox
+                                                                checked={selected.includes(fullName)}
+                                                            />
+                                                            <ListItemText primary={fullName} />
+                                                        </MenuItem>
+                                                    );
+                                                })}
                                             </Select>
                                         </TableCell>
                                         <TableCell>
