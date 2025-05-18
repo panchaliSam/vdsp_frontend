@@ -479,7 +479,6 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
         {/* Buttons */}
         <div className="flex justify-between col-span-2 mt-4">
           <button
-            onClick={() => alert("Reservation creation canceled.")}
             className="bg-white text-black px-4 py-2 rounded border border-gray-300"
           >
             Cancel

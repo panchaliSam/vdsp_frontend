@@ -33,8 +33,6 @@ const LoginSection: React.FC = () => {
     try {
       const response: TokenResponse = await login(userData);
       if (response?.access_token) {
-        alert("Login successful!");
-
         if (
           ["ROLE_ADMIN", "ROLE_STAFF", "ROLE_CUSTOMER"].includes(
             response.userDetails.role

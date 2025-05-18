@@ -113,7 +113,6 @@ const ApprovedReservations: React.FC = () => {
 
       if (paymentStatus?.id !== undefined) {
         // Already paid — don't proceed to payment
-        alert("Payment has already been completed for this reservation.");
         return;
       }
 
