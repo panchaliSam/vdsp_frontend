@@ -18,9 +18,13 @@ import { LocalizationProvider, DatePicker, TimePicker } from "@mui/x-date-picker
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { PickersDay } from "@mui/x-date-pickers";
+import { format } from "date-fns";
 
 import { createReservation } from "@app_api/Reservation.API";
 import type { ReservationDto } from "@app_interfaces/Reservation/ReservationDto";
+import { getCalendarDates } from "@app_api/Calendar.API";
+import type { CalendarDatesResponse } from "@app_interfaces/Calendar/CalendarDatesResponse";
 
 export const EventType = {
   WEDDING: "WEDDING",
@@ -48,6 +52,7 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
   const [packageInfoOpen, setPackageInfoOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<PackageDto | null>(null);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [calendarData, setCalendarData] = useState<CalendarDatesResponse | null>(null);
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -62,6 +67,14 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
     const pack = await getPackageById(id);
     setSelectedPackage(pack);
   };
+
+  useEffect(() => {
+    const fetchCalendar = async () => {
+      const data = await getCalendarDates();
+      if (data) setCalendarData(data);
+    };
+    fetchCalendar();
+  }, []);
 
   const handleSubmit = async () => {
     setErrorMsg(null);
@@ -290,7 +303,71 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
         <DatePicker
           label="Event Date"
           value={eventDate}
-          onChange={(date) => setEventDate(date)}
+          onChange={(newDate) => setEventDate(newDate)}
+          shouldDisableDate={(date) => {
+            const d = format(date, "yyyy-MM-dd");
+
+            const isHoliday = calendarData?.holidays.some(h => h.date === d);
+            const isApprovedFullDay = calendarData?.approvedEventDatesWithSessionType.filter(e => e.eventDate === d).length === 2;
+
+            return isHoliday || isApprovedFullDay;
+          }}
+          slots={{
+            day: (props) => {
+              const d = format(props.day, "yyyy-MM-dd");
+              // const isToday = format(new Date(), "yyyy-MM-dd") === d;
+              const approvedSessions = calendarData?.approvedEventDatesWithSessionType.filter(e => e.eventDate === d) || [];
+              const pendingSessions = calendarData?.pendingEventDatesWithSessionType.filter(e => e.eventDate === d) || [];
+              const holiday = calendarData?.holidays.find(h => h.date === d);
+
+              const tooltip = holiday
+                ? `Holiday – ${holiday.name}`
+                : approvedSessions.length === 2
+                  ? "Fully booked – Reservation not available"
+                  : pendingSessions.length
+                    ? "Pending reservation – may not approve"
+                    : approvedSessions.length === 1
+                      ? `Approved ${approvedSessions[0].sessionType.toLowerCase()} session`
+                      : "";
+
+              return (
+                <Tooltip title={tooltip}>
+                  <span>
+                    <PickersDay
+                      {...props}
+                      disabled={Boolean(holiday) || approvedSessions.length === 2}
+                      sx={{
+                        position: "relative",
+                        "&::before": approvedSessions.some(s => s.sessionType === 'MORNING_SESSION') ? {
+                          content: '""',
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: "50%",
+                          backgroundColor: "	#FFBF00",
+                          opacity: 0.5,
+                          zIndex: 1,
+                        } : undefined,
+                        "&::after": approvedSessions.some(s => s.sessionType === 'EVENING_SESSION') ? {
+                          content: '""',
+                          position: "absolute",
+                          top: "50%",
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          backgroundColor: "	#FFBF00",
+                          opacity: 0.5,
+                          zIndex: 1,
+                        } : undefined,
+                        backgroundColor: pendingSessions.length ? "#008000" : undefined,
+                      }}
+                    />
+                  </span>
+                </Tooltip>
+              );
+            }
+          }}
           slotProps={{
             textField: {
               sx: {
@@ -303,8 +380,8 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
                 "& .MuiInputLabel-root": { color: "white" },
                 "& .MuiInputLabel-root.Mui-focused": { color: "white" },
                 mb: 4,
-              },
-            },
+              }
+            }
           }}
         />
 
@@ -312,8 +389,8 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
           label="Start Time"
           value={startTime}
           onChange={(time) => setStartTime(time)}
-          ampm // enable 12-hour format
-          closeOnSelect // auto-close picker on selection
+          ampm
+          closeOnSelect
           slotProps={{
             textField: {
               required: true,
@@ -333,6 +410,7 @@ const CreateReservation: React.FC<CreateReservationProps> = ({ onSuccessNavigate
             },
           }}
         />
+
 
         <TimePicker
           label="End Time"
