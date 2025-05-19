@@ -2,6 +2,7 @@ import axios from "axios";
 import type { LoginPayload } from "@app_interfaces/User/LoginPayload";
 import type { TokenResponse } from "@app_interfaces/User/TokenResponse";
 import type { UserDto } from "@app_interfaces/User/UserDto";
+import type { UserUpdateDto } from "@app_interfaces/User/UserUpdateDto";
 import {
   getRefreshToken,
   setTokens,
@@ -75,6 +76,20 @@ export const updateUser = async (
   } catch (error) {
     console.error(error);
     throw new Error(`Failed to update user with ID ${id}.`);
+  }
+};
+
+// Patch User Profile API (firstName, lastName, password, phoneNumber)
+export const patchUserProfile = async (
+  id: number,
+  updates: UserUpdateDto
+): Promise<string> => {
+  try {
+    const response = await axiosInstance.patch<string>(`/users/update-profile/${id}`, updates);
+    return response.data;
+  } catch (error: any) {
+    console.error(`Failed to patch user profile for ID ${id}:`, error);
+    throw new Error(error.message || `Failed to update profile for user ${id}.`);
   }
 };
 
