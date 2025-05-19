@@ -12,6 +12,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import CollectionsIcon from '@mui/icons-material/Collections';
+import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
@@ -28,6 +29,7 @@ import EventAlbumStatus from "@app_components/admin/Event/EventAlbumStatus";
 import EventStaffAssign from "@app_components/admin/Event/EventStaffAssign";
 import MyNotifications from "@app_components/admin/Notifications/MyNotifications";
 import DashboardStats from "@app_components/admin/DashboardStat/DashboardStats";
+import AddHoliday from "@app_components/admin/Holiday/AddHoliday";
 
 const demoTheme = createTheme({
   palette: {
@@ -74,6 +76,11 @@ const NAVIGATION: Navigation = [
     segment: "dashboard",
     title: "Dashboard",
     icon: <DashboardIcon />,
+  },
+  {
+    segment: "holiday",
+    title: "Holiday",
+    icon: <HomeRepairServiceIcon />,
   },
   {
     segment: "people",
@@ -170,6 +177,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <DashboardStats />;
       case "/people":
         return <PeopleComponent />;
+      case "/holiday":
+        return <AddHoliday />;
       case "/packages":
         return <PackageComponent />;
       case "/approveReservations":
