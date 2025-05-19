@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
+:root {
+  --clr-night: #000000;
+  --clr-graphite: #141619;
+  --clr-smoke: #131313;
+  --clr-iris: #00AEEF;
+  --clr-scarlet-ring: #FF3131;
+  --clr-gold-focus: #F9B500;
+  --clr-cyan: #1BD5FF;
+  --clr-crimson: #FF2F45;
+}
+
 @layer base {
   body {
-    font-family: "Urbanist", sans-serif;
+    font-family: 'InterVariable', 'Inter', 'Urbanist', sans-serif;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 1.4;
   }
 }
 
@@ -10,10 +23,61 @@
   .font-urbanist {
     font-family: "Urbanist", sans-serif;
   }
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+  }
+  .font-serif {
+    font-family: 'Playfair Display', serif;
+  }
+  .text-night { color: var(--clr-night); }
+  .text-smoke { color: var(--clr-smoke); }
+  .text-crimson-400 { color: var(--clr-crimson); }
+  .text-gold-focus { color: var(--clr-gold-focus); }
+  .text-iris { color: var(--clr-iris); }
+  .text-scarlet-ring { color: var(--clr-scarlet-ring); }
+  .bg-night { background: var(--clr-night); }
+  .bg-graphite { background: var(--clr-graphite); }
+  .bg-smoke { background: var(--clr-smoke); }
+  .bg-iris { background: var(--clr-iris); }
+  .bg-scarlet-ring { background: var(--clr-scarlet-ring); }
+  .bg-gold-focus { background: var(--clr-gold-focus); }
+  .bg-cyan-400 { background: var(--clr-cyan); }
+  .bg-crimson-400 { background: var(--clr-crimson); }
+  .ring-cyan-400\/70 { box-shadow: 0 0 0 2px rgba(27,213,255,0.7); }
+  .shadow-tagline { text-shadow: 0 4px 14px rgba(0,0,0,0.7); }
+  .focus-ring-iris:focus { outline: 2px solid var(--clr-iris); outline-offset: 2px; }
+  .focus-ring-cyan:focus-visible { outline: 2px solid var(--clr-cyan); outline-offset: 2px; }
+  .inner-shadow-card { box-shadow: inset 0 2px 16px 0 rgba(0,0,0,0.45); }
+  .fade-bottom { position: relative; }
+  .fade-bottom::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(to top, var(--clr-night) 80%, transparent 100%); pointer-events: none; }
+  .cta-solid {
+    @apply relative inline-flex items-center justify-center px-8 py-4 font-semibold tracking-wide shadow-lg rounded-xl transition-all duration-150 ease-out hover:brightness-110 active:scale-95;
+    background: linear-gradient(90deg, #f7d501 0%, #f7d501 100%);
+    color: #000000;
+  }
+  .cta-ghost {
+    @apply inline-flex items-center justify-center px-8 py-4 font-semibold tracking-wide rounded-xl active:scale-95 transition-all duration-150 ease-out;
+    border: 2px solid #f7d501;
+    color: #f7d501;
+    background: transparent;
+  }
+  .cta-ghost:hover {
+    background: #f7d50122;
+  }
+  .perspective-1000 { perspective: 1000px; }
 }
 
 @layer utilities {
   .font-urbanist {
     font-family: "Urbanist", sans-serif;
+  }
+  .active\:scale-95:active { transform: scale(0.95); }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 80%);
+    pointer-events: none;
   }
 }

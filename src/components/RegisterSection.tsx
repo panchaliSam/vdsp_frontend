@@ -59,7 +59,6 @@ const RegisterSection: React.FC = () => {
 
     try {
       await registerUser(userData);
-      alert("Registration successful!");
       navigate("/login");
     } catch (apiError: any) {
       setErrors({

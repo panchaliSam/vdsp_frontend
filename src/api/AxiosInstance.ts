@@ -33,6 +33,13 @@ axiosInstance.interceptors.request.use(
 // Response Interceptor - Response Handler
 axiosInstance.interceptors.response.use(
   (response) => {
+
+    // Skip handling for OPTIONS requests
+    // OPTIONS requests are typically used for CORS preflight checks
+    if (response.config.method?.toUpperCase() === "OPTIONS") {
+      return response;
+    }
+
     // Handle 2xx responses
     const envelope = response.data as ApiResponse<unknown>
     console.log("Response Envelope:", envelope.message);
@@ -41,7 +48,7 @@ axiosInstance.interceptors.response.use(
       toast.success(envelope.message, { duration: 2000, position: "bottom-right" })
       return { ...response, data: envelope.data }
     } else {
-      toast.error(envelope.message)
+      toast.error(envelope.message, { duration: 2000, position: "bottom-right" })
       return Promise.reject(new Error(envelope.message))
     }
   }, async (error) => {
@@ -52,9 +59,7 @@ axiosInstance.interceptors.response.use(
     if (originalRequest.url.includes("/users/refresh")) {
 
       if (error.response?.status === 401) {
-        console.error("Refresh token expired or invalid.");
         clearTokens();
-
       } else {
         // Handle refresh token expiration
         return Promise.resolve();
@@ -81,12 +86,12 @@ axiosInstance.interceptors.response.use(
 
         return axiosInstance(originalRequest);
       } catch (error) {
-        toast.error("Failed to refresh access token")
-        return Promise.reject(error); // if refreshToken() fails
+        console.error("Error:", error);
+        clearTokens();
       }
     }
 
-    toast.error("Failed to refresh access token")
+    toast.error(error.message, { duration: 2000, position: "bottom-right" })
     return Promise.reject(error.message);
   }
 );
