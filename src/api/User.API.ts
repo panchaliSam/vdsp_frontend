@@ -3,6 +3,8 @@ import type { LoginPayload } from "@app_interfaces/User/LoginPayload";
 import type { TokenResponse } from "@app_interfaces/User/TokenResponse";
 import type { UserDto } from "@app_interfaces/User/UserDto";
 import type { UserUpdateDto } from "@app_interfaces/User/UserUpdateDto";
+import type { ForgotPasswordPayload } from "@app_interfaces/User/ForgotPasswordPayload";
+import type { ResetPasswordPayload } from "@app_interfaces/User/ResetPasswordPayload";
 import {
   getRefreshToken,
   setTokens,
@@ -162,5 +164,31 @@ export const logout = async (): Promise<void> => {
     }
     clearTokens();
     throw new Error("Logout failed. Please try again later.");
+  }
+};
+
+// Forgot Password API
+export const forgotPassword = async (
+  payload: ForgotPasswordPayload
+): Promise<string> => {
+  try {
+    const response = await axiosInstance.post("/users/forgot-password", payload);
+    return response.data.message;
+  } catch (error) {
+    console.error("Forgot password failed:", error);
+    throw new Error("Failed to send reset link. Please try again later.");
+  }
+};
+
+// Reset Password API
+export const resetPassword = async (
+  payload: ResetPasswordPayload
+): Promise<string> => {
+  try {
+    const response = await axiosInstance.post("/users/reset-password", payload);
+    return response.data.message;
+  } catch (error) {
+    console.error("Reset password failed:", error);
+    throw new Error("Failed to reset password. The token may be invalid or expired.");
   }
 };
