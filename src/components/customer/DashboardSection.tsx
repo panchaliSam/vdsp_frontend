@@ -81,7 +81,7 @@ const NAVIGATION: Navigation = [
   },
   {
     kind: "header",
-    title: "Analytics",
+    title: "Other",
   },
   {
     segment: "notifications",
