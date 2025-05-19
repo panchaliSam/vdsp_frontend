@@ -9,7 +9,6 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import LogoutIcon from "@mui/icons-material/Logout";
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import CollectionsIcon from '@mui/icons-material/Collections';
 import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
@@ -27,7 +26,6 @@ import RoleComponent from "@app_components/admin/Role/ManageRoles";
 import StaffRoleAssign from "@app_components/admin/Role/ManageStaffRoles";
 import EventAlbumStatus from "@app_components/admin/Event/EventAlbumStatus";
 import EventStaffAssign from "@app_components/admin/Event/EventStaffAssign";
-import MyNotifications from "@app_components/admin/Notifications/MyNotifications";
 import DashboardStats from "@app_components/admin/DashboardStat/DashboardStats";
 import AddHoliday from "@app_components/admin/Holiday/AddHoliday";
 
@@ -147,15 +145,6 @@ const NAVIGATION: Navigation = [
     kind: "divider",
   },
   {
-    kind: "header",
-    title: "Analytics",
-  },
-  {
-    segment: "notifications",
-    title: "Notifications",
-    icon: <NotificationsIcon />,
-  },
-  {
     kind: "divider",
   },
   {
@@ -191,10 +180,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <EventAlbumStatus />;
       case "/assignEvents":
         return <EventStaffAssign />;
-      case "/notifications":
-        return <MyNotifications />;
       default:
-        return <PeopleComponent />;
+        return <DashboardStats />;
     }
   };
 

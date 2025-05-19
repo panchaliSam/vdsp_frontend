@@ -28,3 +28,14 @@ export const updateAlbumStatus = async (
         throw new Error("Unable to update album status. Please try again later.");
     }
 };
+
+// Get all events for the current customer
+export const getMyEvents = async (): Promise<EventDto[]> => {
+    try {
+        const response = await axiosInstance.get<EventDto[]>("/events/my");
+        return response.data;
+    } catch (error: any) {
+        console.error("Failed to fetch customer events:", error);
+        throw new Error(error.message || "Unable to fetch your events. Please try again later.");
+    }
+};

@@ -5,6 +5,7 @@ import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PaymentIcon from '@mui/icons-material/Payment';
+import PhotoAlbumIcon from '@mui/icons-material/PhotoAlbum';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
@@ -17,6 +18,7 @@ import CreateReservation from "@app_components/customer/Reservations/CreateReser
 import ApprovedReservations from "@app_components/customer/Reservations/ApprovedReservations";
 import PaymentHistory from "@app_components/customer/Payments/PaymentHistory";
 import MyNotifications from "@app_components/customer/Notifications/MyNotifications";
+import CustomerEvents from "@app_components/customer/Event/CustomerEvents";
 
 const demoTheme = createTheme({
   palette: {
@@ -70,6 +72,11 @@ const NAVIGATION: Navigation = [
     icon: <AssignmentTurnedInIcon />,
   },
   {
+    segment: "events",
+    title: "Album Status",
+    icon: < PhotoAlbumIcon />,
+  },
+  {
     kind: "divider",
   },
   {
@@ -112,6 +119,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <PaymentHistory />;
       case "/notifications":
         return <MyNotifications />;
+      case "/events":
+        return <CustomerEvents />;
       default:
         return <ApprovedReservations />;
     }
