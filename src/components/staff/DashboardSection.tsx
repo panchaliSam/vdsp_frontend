@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createTheme } from "@mui/material/styles";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import InventoryIcon from '@mui/icons-material/Inventory';
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -17,6 +17,7 @@ import { logout } from "@app_api/User.API";
 import PackageComponent from "@app_components/staff/Dashboard/ManagePackages";
 import EventAlbumStatus from "@app_components/staff/Event/EventAlbumStatus";
 import MyEventAssignmentsCalendar from "@app_components/staff/Event/EventAssignmentsCalendar";
+import MyNotifications from "@app_components/staff/Notifications/MyNotifications";
 
 const demoTheme = createTheme({
   palette: {
@@ -60,9 +61,9 @@ const NAVIGATION: Navigation = [
     title: "Dashboard Section",
   },
   {
-    segment: "dashboard",
-    title: "Dashboard",
-    icon: <DashboardIcon />,
+    segment: "calendar",
+    title: "Calendar",
+    icon: <CalendarMonthIcon />,
   },
   {
     segment: "packages",
@@ -116,12 +117,14 @@ export default function DashboardLayoutBasic(props: any) {
 
   const renderContent = () => {
     switch (router.pathname) {
-      case "/dashboard":
+      case "/calendar":
         return <MyEventAssignmentsCalendar />;
       case "/packages":
         return <PackageComponent />;
       case "/events":
         return <EventAlbumStatus />;
+      case "/notifications":
+        return <MyNotifications />;
       default:
         return <PackageComponent />;
     }

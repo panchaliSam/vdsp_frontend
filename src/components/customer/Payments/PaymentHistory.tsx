@@ -59,7 +59,7 @@ const PaymentHistory: React.FC = () => {
     const handleDownloadReport = async (reservationId: number) => {
         try {
             await downloadConfirmationReport(reservationId);
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to download report:", err);
         }
     };

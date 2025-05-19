@@ -77,25 +77,52 @@ export const getTotalSuccessfulPayments = async (): Promise<number> => {
   }
 };
 
-//Download the report of a reservation
-export const downloadConfirmationReport = async (reservationId: number): Promise<void> => {
+export const downloadConfirmationReport = async (
+  reservationId: number
+): Promise<void> => {
   try {
-    const response = await axiosInstance.get(`/payment/reservation/${reservationId}/confirmation-letter`, {
-      responseType: 'blob',
-    });
+    // Call without responseType so we get JSON (or whatever the interceptor returns).
+    const resp = await axiosInstance.get(
+      `/payment/reservation/${reservationId}/confirmation-letter`
+    );
 
-    const blob = new Blob([response.data], { type: 'application/pdf' });
+    // 1) If your interceptor unwrapped the envelope, `resp` is already the Base64 string.
+    // 2) Otherwise it's an object { success, message, data }.
+    let base64: string;
+    if (typeof resp === "string") {
+      base64 = resp;
+    } else if (typeof resp.data === "string") {
+      base64 = resp.data;
+    } else if (resp.data && typeof resp.data.data === "string") {
+      base64 = resp.data.data;
+    } else {
+      console.error("Full response was:", resp);
+      throw new Error("No PDF data returned");
+    }
+
+    // (Optional) log so you can see which branch you hit
+    console.log("Got PDF Base64:", base64.slice(0, 50) + "...");
+
+    // Decode and download as before
+    const binary = atob(base64);
+    const len = binary.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes.buffer], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `Reservation_Confirmation_${reservationId}.pdf`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
-  } catch (error) {
+
+  } catch (error: any) {
     console.error("Failed to download confirmation report:", error);
-    throw new Error("Unable to download confirmation letter.");
+    throw new Error(error.message || "Unable to download confirmation letter.");
   }
 };

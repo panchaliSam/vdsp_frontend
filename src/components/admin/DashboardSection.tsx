@@ -10,7 +10,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import PaymentIcon from '@mui/icons-material/Payment';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import CollectionsIcon from '@mui/icons-material/Collections';
 import { AppProvider } from "@toolpad/core/AppProvider";
@@ -27,6 +26,7 @@ import RoleComponent from "@app_components/admin/Role/ManageRoles";
 import StaffRoleAssign from "@app_components/admin/Role/ManageStaffRoles";
 import EventAlbumStatus from "@app_components/admin/Event/EventAlbumStatus";
 import EventStaffAssign from "@app_components/admin/Event/EventStaffAssign";
+import MyNotifications from "@app_components/admin/Notifications/MyNotifications";
 
 const demoTheme = createTheme({
   palette: {
@@ -148,11 +148,6 @@ const NAVIGATION: Navigation = [
     icon: <NotificationsIcon />,
   },
   {
-    segment: "payments",
-    title: "Payments",
-    icon: <PaymentIcon />,
-  },
-  {
     kind: "divider",
   },
   {
@@ -184,6 +179,8 @@ export default function DashboardLayoutBasic(props: any) {
         return <EventAlbumStatus />;
       case "/assignEvents":
         return <EventStaffAssign />;
+      case "/notifications":
+        return <MyNotifications />;
       default:
         return <PeopleComponent />;
     }
