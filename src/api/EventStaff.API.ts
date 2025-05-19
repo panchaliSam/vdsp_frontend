@@ -26,17 +26,30 @@ export const getEventStaffById = async (id: number): Promise<EventStaffDto | nul
 
 // Assign multiple staff by full names (admin only)
 export const assignMultipleStaffByName = async (
-    id: number,
+    slotId: number,
     staffNames: string[]
-): Promise<boolean> => {
+): Promise<string | null> => {
     try {
-        const response = await axiosInstance.patch(
-            `/eventStaff/${id}/assignByName`,
+        const res = await axiosInstance.patch(
+            `/eventStaff/${slotId}/assignByName`,
             { staffNames }
         );
-        return response.data;
-    } catch (error: any) {
-        return false;
+        return res.data.message;
+    } catch (e: any) {
+        return null;
+    }
+};
+
+export const unassignStaff = async (
+    slotId: number
+): Promise<string | null> => {
+    try {
+        const res = await axiosInstance.patch(
+            `/eventStaff/${slotId}/unassign`
+        );
+        return res.data.message;
+    } catch (e: any) {
+        return null;
     }
 };
 
