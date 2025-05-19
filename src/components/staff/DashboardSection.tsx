@@ -7,6 +7,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import CollectionsIcon from '@mui/icons-material/Collections';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
@@ -18,6 +19,8 @@ import PackageComponent from "@app_components/staff/Dashboard/ManagePackages";
 import EventAlbumStatus from "@app_components/staff/Event/EventAlbumStatus";
 import MyEventAssignmentsCalendar from "@app_components/staff/Event/EventAssignmentsCalendar";
 import MyNotifications from "@app_components/staff/Notifications/MyNotifications";
+import UserProfileUpdate from "@app_components/admin/UserProfile/UserProfileUpdate"
+import { getUserIdFromToken } from "@app_api/helper/getUserIdFromToken";
 
 const demoTheme = createTheme({
   palette: {
@@ -103,6 +106,11 @@ const NAVIGATION: Navigation = [
     kind: "divider",
   },
   {
+    segment: "profile",
+    title: "My Profile",
+    icon: < ManageAccountsIcon />,
+  },
+  {
     segment: "logout",
     title: "Logout",
     icon: <LogoutIcon />,
@@ -116,6 +124,7 @@ export default function DashboardLayoutBasic(props: any) {
   const demoWindow = window ? window() : undefined;
 
   const renderContent = () => {
+    const userId = getUserIdFromToken();
     switch (router.pathname) {
       case "/calendar":
         return <MyEventAssignmentsCalendar />;
@@ -125,6 +134,14 @@ export default function DashboardLayoutBasic(props: any) {
         return <EventAlbumStatus />;
       case "/notifications":
         return <MyNotifications />;
+      case "/profile":
+        return userId ? (
+          <UserProfileUpdate userId={userId} />
+        ) : (
+          <Typography color="error" sx={{ p: 3 }}>
+            Unauthorized: Invalid or missing token
+          </Typography>
+        );
       default:
         return <PackageComponent />;
     }

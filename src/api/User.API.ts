@@ -79,17 +79,16 @@ export const updateUser = async (
   }
 };
 
-// Patch User Profile API (firstName, lastName, password, phoneNumber)
-export const patchUserProfile = async (
-  id: number,
+export const patchMyProfile = async (
   updates: UserUpdateDto
-): Promise<string> => {
+): Promise<number | null> => {
   try {
-    const response = await axiosInstance.patch<string>(`/users/update-profile/${id}`, updates);
-    return response.data;
+    const response = await axiosInstance.patch
+      ("/users/update-profile", updates);
+    return response.data.data ?? null;
   } catch (error: any) {
-    console.error(`Failed to patch user profile for ID ${id}:`, error);
-    throw new Error(error.message || `Failed to update profile for user ${id}.`);
+    console.error("Profile update failed:", error);
+    return null;
   }
 };
 

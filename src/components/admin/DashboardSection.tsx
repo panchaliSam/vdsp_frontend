@@ -9,6 +9,7 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import LogoutIcon from "@mui/icons-material/Logout";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import CollectionsIcon from '@mui/icons-material/Collections';
 import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
@@ -28,6 +29,8 @@ import EventAlbumStatus from "@app_components/admin/Event/EventAlbumStatus";
 import EventStaffAssign from "@app_components/admin/Event/EventStaffAssign";
 import DashboardStats from "@app_components/admin/DashboardStat/DashboardStats";
 import AddHoliday from "@app_components/admin/Holiday/AddHoliday";
+import UserProfileUpdate from "@app_components/admin/UserProfile/UserProfileUpdate"
+import { getUserIdFromToken } from "@app_api/helper/getUserIdFromToken";
 
 const demoTheme = createTheme({
   palette: {
@@ -148,6 +151,11 @@ const NAVIGATION: Navigation = [
     kind: "divider",
   },
   {
+    segment: "profile",
+    title: "My Profile",
+    icon: < ManageAccountsIcon />,
+  },
+  {
     segment: "logout",
     title: "Logout",
     icon: <LogoutIcon />,
@@ -161,6 +169,8 @@ export default function DashboardLayoutBasic(props: any) {
   const demoWindow = window ? window() : undefined;
 
   const renderContent = () => {
+    const userId = getUserIdFromToken();
+
     switch (router.pathname) {
       case "/dashboard":
         return <DashboardStats />;
@@ -180,6 +190,14 @@ export default function DashboardLayoutBasic(props: any) {
         return <EventAlbumStatus />;
       case "/assignEvents":
         return <EventStaffAssign />;
+      case "/profile":
+        return userId ? (
+          <UserProfileUpdate userId={userId} />
+        ) : (
+          <Typography color="error" sx={{ p: 3 }}>
+            Unauthorized: Invalid or missing token
+          </Typography>
+        );
       default:
         return <DashboardStats />;
     }

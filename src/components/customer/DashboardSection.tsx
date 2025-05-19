@@ -6,6 +6,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PaymentIcon from '@mui/icons-material/Payment';
 import PhotoAlbumIcon from '@mui/icons-material/PhotoAlbum';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import logo from "@app_assets/logo/png/logo-no-background.png";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import type { Navigation, Router } from "@toolpad/core";
@@ -19,6 +20,8 @@ import ApprovedReservations from "@app_components/customer/Reservations/Approved
 import PaymentHistory from "@app_components/customer/Payments/PaymentHistory";
 import MyNotifications from "@app_components/customer/Notifications/MyNotifications";
 import CustomerEvents from "@app_components/customer/Event/CustomerEvents";
+import UserProfileUpdate from "@app_components/admin/UserProfile/UserProfileUpdate"
+import { getUserIdFromToken } from "@app_api/helper/getUserIdFromToken";
 
 const demoTheme = createTheme({
   palette: {
@@ -97,6 +100,11 @@ const NAVIGATION: Navigation = [
     kind: "divider",
   },
   {
+    segment: "profile",
+    title: "My Profile",
+    icon: < ManageAccountsIcon />,
+  },
+  {
     segment: "logout",
     title: "Logout",
     icon: <LogoutIcon />,
@@ -110,6 +118,7 @@ export default function DashboardLayoutBasic(props: any) {
   const demoWindow = window ? window() : undefined;
 
   const renderContent = () => {
+    const userId = getUserIdFromToken();
     switch (router.pathname) {
       case "/dashboard":
         return <ApprovedReservations />;
@@ -121,6 +130,14 @@ export default function DashboardLayoutBasic(props: any) {
         return <MyNotifications />;
       case "/events":
         return <CustomerEvents />;
+      case "/profile":
+        return userId ? (
+          <UserProfileUpdate userId={userId} />
+        ) : (
+          <Typography color="error" sx={{ p: 3 }}>
+            Unauthorized: Invalid or missing token
+          </Typography>
+        );
       default:
         return <ApprovedReservations />;
     }
