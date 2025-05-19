@@ -27,6 +27,7 @@ import StaffRoleAssign from "@app_components/admin/Role/ManageStaffRoles";
 import EventAlbumStatus from "@app_components/admin/Event/EventAlbumStatus";
 import EventStaffAssign from "@app_components/admin/Event/EventStaffAssign";
 import MyNotifications from "@app_components/admin/Notifications/MyNotifications";
+import DashboardStats from "@app_components/admin/DashboardStat/DashboardStats";
 
 const demoTheme = createTheme({
   palette: {
@@ -165,6 +166,8 @@ export default function DashboardLayoutBasic(props: any) {
 
   const renderContent = () => {
     switch (router.pathname) {
+      case "/dashboard":
+        return <DashboardStats />;
       case "/people":
         return <PeopleComponent />;
       case "/packages":
