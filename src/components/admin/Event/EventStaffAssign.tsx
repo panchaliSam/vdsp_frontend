@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     getAllEventStaff,
     assignMultipleStaffByName,
+    unassignStaff,
 } from "@app_api/EventStaff.API";
 import { getAllStaff } from "@app_api/Staff.API";
 import type { EventStaffDto } from "@app_interfaces/EventStaff/EventStaffDto";
@@ -25,72 +26,111 @@ import Autocomplete from "@mui/material/Autocomplete";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
 
+interface DateGroup {
+    date: string;
+    baseSlotId: number;
+    slots: EventStaffDto[];
+}
+
 const EventStaffAssign: React.FC = () => {
-    const [eventStaffList, setEventStaffList] = useState<EventStaffDto[]>([]);
+    const [slots, setSlots] = useState<EventStaffDto[]>([]);
     const [staffList, setStaffList] = useState<StaffDto[]>([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedStaffNames, setSelectedStaffNames] = useState<Record<number, string[]>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [search, setSearch] = useState("");
 
+    // 1) load everything
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             try {
-                const [eventStaff, staff] = await Promise.all([
+                const [allSlots, allStaff] = await Promise.all([
                     getAllEventStaff(),
                     getAllStaff(),
                 ]);
-                const esList = eventStaff ?? [];
-                setEventStaffList(esList);
-                setStaffList(staff ?? []);
-                console.log("Fetched staffList:", staff);
-
-                const initialSelection: Record<number, string[]> = {};
-                esList.forEach(es => {
-                    initialSelection[es.id] = es.staff
-                        ? [`${es.staff.firstName} ${es.staff.lastName}`]
-                        : [];
-                });
-                setSelectedStaffNames(initialSelection);
-            } catch (err) {
-                setError("Failed to fetch data.");
+                setSlots(allSlots);
+                setStaffList(allStaff ?? []);
+            } catch {
+                setError("Unable to load data");
             } finally {
                 setLoading(false);
             }
-        };
-        fetchData();
+        })();
     }, []);
 
-    const handleStaffChange = async (eventStaffId: number, names: string[]) => {
-        // Optimistically update UI
-        setSelectedStaffNames(prev => ({ ...prev, [eventStaffId]: names }));
-        try {
-            const success = await assignMultipleStaffByName(eventStaffId, names);
-            if (!success) {
-                console.error("Assignment failed on server.");
+    // 2) group by date
+    const groups: DateGroup[] = useMemo(() => {
+        const map: Record<string, DateGroup> = {};
+        for (const s of slots) {
+            if (!map[s.eventDate]) {
+                map[s.eventDate] = {
+                    date: s.eventDate,
+                    baseSlotId: s.id,
+                    slots: [],
+                };
             }
-        } catch (err) {
-            console.error("Failed to assign multiple staff:", err);
+            map[s.eventDate].slots.push(s);
         }
+        return Object.values(map).sort((a, b) =>
+            a.date.localeCompare(b.date)
+        );
+    }, [slots]);
+
+    // 3) handle additions / removals
+    const handleChange = async (
+        group: DateGroup,
+        newNames: string[]
+    ) => {
+        const oldNames = group.slots
+            .filter((s) => s.staff)
+            .map(
+                (s) =>
+                    `${s.staff!.firstName} ${s.staff!.lastName}`
+            );
+
+        const toAdd = newNames.filter((n) => !oldNames.includes(n));
+        const toRemove = oldNames.filter((n) => !newNames.includes(n));
+
+        // 3a) remove first, one by one
+        for (const name of toRemove) {
+            const slot = group.slots.find(
+                (s) =>
+                    s.staff &&
+                    `${s.staff.firstName} ${s.staff.lastName}` === name
+            );
+            if (slot) {
+                await unassignStaff(slot.id);
+            }
+        }
+
+        // 3b) add all at once on the baseSlot
+        if (toAdd.length) {
+            await assignMultipleStaffByName(
+                group.baseSlotId,
+                toAdd
+            );
+        }
+
+        // 3c) re-load
+        const refreshed = await getAllEventStaff();
+        setSlots(refreshed);
     };
 
-    const filteredList = eventStaffList.filter(es => {
-        const query = searchQuery.toLowerCase();
-        const names = selectedStaffNames[es.id] ?? [];
-        const staffString = names.join(", ").toLowerCase();
-        const dateString = es.eventDate?.toLowerCase() ?? "";
-        return staffString.includes(query) || dateString.includes(query);
-    });
+    if (loading)
+        return (
+            <Box textAlign="center" mt={4}>
+                <CircularProgress />
+            </Box>
+        );
+    if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Container sx={{ mt: 4 }}>
-            <Box mb={2} display="flex" justifyContent="space-between">
+            <Box mb={2} display="flex">
                 <TextField
-                    placeholder="Search by staff name or event date"
+                    placeholder="Search by staff or date"
                     size="small"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    sx={{ width: 320 }}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -101,56 +141,65 @@ const EventStaffAssign: React.FC = () => {
                 />
             </Box>
 
-            {loading ? (
-                <CircularProgress />
-            ) : error ? (
-                <Typography color="error">{error}</Typography>
-            ) : (
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Event Date</TableCell>
-                                <TableCell>Assigned Staff</TableCell>
-                                <TableCell>Status</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filteredList.map(es => {
-                                const names = selectedStaffNames[es.id] ?? [];
-                                const assigned = names.length > 0;
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Date</TableCell>
+                            <TableCell>Staff</TableCell>
+                            <TableCell>Status</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {groups
+                            .filter((g) =>
+                                g.date.includes(search.toLowerCase()) ||
+                                g.slots
+                                    .map((s) =>
+                                        s.staff
+                                            ? `${s.staff.firstName} ${s.staff.lastName}`
+                                            : ""
+                                    )
+                                    .join(", ")
+                                    .toLowerCase()
+                                    .includes(search.toLowerCase())
+                            )
+                            .map((g) => {
+                                const assignedNames = g.slots
+                                    .filter((s) => s.staff)
+                                    .map(
+                                        (s) =>
+                                            `${s.staff!.firstName} ${s.staff!.lastName}`
+                                    );
                                 return (
-                                    <TableRow key={es.id}>
-                                        <TableCell>{es.id}</TableCell>
-                                        <TableCell>{es.eventDate}</TableCell>
-                                        <TableCell sx={{ minWidth: 200 }}>
+                                    <TableRow key={g.date}>
+                                        <TableCell>{g.date}</TableCell>
+                                        <TableCell sx={{ minWidth: 240 }}>
                                             <Autocomplete
                                                 multiple
                                                 options={staffList.map(
-                                                    s => `${s.firstName} ${s.lastName}`
+                                                    (s) =>
+                                                        `${s.firstName} ${s.lastName}`
                                                 )}
-                                                value={names}
-                                                onChange={(
-                                                    _event: React.SyntheticEvent<Element, Event>,
-                                                    value: string[]
-                                                ) => handleStaffChange(es.id, value)}
+                                                value={assignedNames}
+                                                onChange={(_, v) =>
+                                                    handleChange(g, v)
+                                                }
                                                 filterSelectedOptions
                                                 renderTags={(value, getTagProps) =>
-                                                    value.map((option, idx) => (
+                                                    value.map((opt, i) => (
                                                         <Chip
-                                                            {...getTagProps({ index: idx })}
-                                                            key={option}
-                                                            label={option}
+                                                            {...getTagProps({ index: i })}
+                                                            key={opt}
+                                                            label={opt}
                                                             size="small"
                                                         />
                                                     ))
                                                 }
-                                                renderInput={params => (
+                                                renderInput={(params) => (
                                                     <TextField
                                                         {...params}
-                                                        variant="outlined"
-                                                        placeholder="Select Staff"
+                                                        placeholder="Select staff"
                                                         size="small"
                                                     />
                                                 )}
@@ -159,21 +208,24 @@ const EventStaffAssign: React.FC = () => {
                                         <TableCell>
                                             <Chip
                                                 label={
-                                                    assigned
-                                                        ? `${names.length} assigned`
-                                                        : "Not Assigned"
+                                                    assignedNames.length > 0
+                                                        ? `${assignedNames.length} assigned`
+                                                        : "none"
                                                 }
-                                                color={assigned ? "success" : "warning"}
+                                                color={
+                                                    assignedNames.length > 0
+                                                        ? "success"
+                                                        : "warning"
+                                                }
                                                 size="small"
                                             />
                                         </TableCell>
                                     </TableRow>
                                 );
                             })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Container>
     );
 };
