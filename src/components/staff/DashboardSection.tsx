@@ -21,6 +21,8 @@ import MyEventAssignmentsCalendar from "@app_components/staff/Event/EventAssignm
 import MyNotifications from "@app_components/staff/Notifications/MyNotifications";
 import UserProfileUpdate from "@app_components/admin/UserProfile/UserProfileUpdate"
 import { getUserIdFromToken } from "@app_api/helper/getUserIdFromToken";
+import AlbumUploader from "@app_components/AlbumUploader";
+import EventsSidebar from "@app_components/admin/Event/EventsSidebar";
 
 const demoTheme = createTheme({
   palette: {
@@ -141,6 +143,17 @@ export default function DashboardLayoutBasic(props: any) {
           <Typography color="error" sx={{ p: 3 }}>
             Unauthorized: Invalid or missing token
           </Typography>
+        );
+      case "/gallery":
+        return (
+          <div style={{ display: 'flex', height: '100%', minHeight: 600 }}>
+            <div style={{ flex: 2, padding: '2rem' }}>
+              <AlbumUploader eventId={1} />
+            </div>
+            <div style={{ flex: 1, borderLeft: '2px solid #eee', padding: '2rem', background: '#fafafa' }}>
+              <EventsSidebar />
+            </div>
+          </div>
         );
       default:
         return <PackageComponent />;
