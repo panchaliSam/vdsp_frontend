@@ -17,6 +17,8 @@ axiosInstance.interceptors.request.use(
       return config;
     } else if (config.url?.includes("/users/login")) {
       return config;
+    } else if (config.url?.includes("mpcs.sgp1.cdn.digitaloceanspaces.com")) {
+      return config;
     }
 
     const accessToken = getAccessToken();
@@ -40,9 +42,12 @@ axiosInstance.interceptors.response.use(
       return response;
     }
 
+    if (response.config.url?.includes("mpcs.sgp1.cdn.digitaloceanspaces.com")) {
+      return response ;
+    }
     // Handle 2xx responses
     const envelope = response.data as ApiResponse<unknown>
-    console.log("Response Envelope:", envelope.message);
+    console.log("Response Envelope:", envelope);
 
     if (envelope.success) {
       toast.success(envelope.message, { duration: 2000, position: "bottom-right" })
