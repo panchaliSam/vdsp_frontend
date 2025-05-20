@@ -148,10 +148,12 @@ export default function DashboardLayoutBasic(props: any) {
         return (
           <div style={{ display: 'flex', height: '100%', minHeight: 600 }}>
             <div style={{ flex: 2, padding: '2rem' }}>
-              <AlbumUploader eventId={1} />
+              <AlbumUploader eventId={null} album={null} />
             </div>
             <div style={{ flex: 1, borderLeft: '2px solid #eee', padding: '2rem', background: '#fafafa' }}>
-              <EventsSidebar />
+              <EventsSidebar selectedId={null} onSelect={function (id: number): void {
+                throw new Error("Function not implemented.");
+              } } />
             </div>
           </div>
         );

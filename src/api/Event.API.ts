@@ -4,7 +4,7 @@ import type { EventDto, AlbumStatus } from "@app_interfaces/Event/EventDto";
 // Get all events (Admin/Staff)
 export const getAllEvents = async (): Promise<EventDto[]> => {
     try {
-        const response = await axiosInstance.get("/events/getAll");
+        const response = await axiosInstance.get("/events/getAll/IN_PROGRESS");
         return response.data;
     } catch (error) {
         console.error("Failed to fetch events:", error);
