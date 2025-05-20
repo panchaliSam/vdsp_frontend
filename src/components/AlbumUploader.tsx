@@ -4,42 +4,44 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 import { createAlbum } from "@app_api/AlbumApi";
+import type { AlbumDto } from "@app_api/AlbumApi";
 import { presignBatch, saveImage } from "@app_api/UploadApi";
 import { toWebp } from "../utils/image";
 
 interface Props {
-    /** Event id needed later in your flow – keep if you still PATCH status */
-    eventId: number;
+    eventId: number | null;
+    album: AlbumDto | null;
 }
 
-const AlbumUploader: FC<Props> = ({ eventId }) => {
+const AlbumUploader: FC<Props> = ({ eventId, album }) => {
     const [albumName, setAlbumName] = useState("");
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [progress, setProgress] = useState<Record<string, number>>({});
     const [uploading, setUploading] = useState(false);
     const inFlight = useRef(false);
 
-    /* warn on tab close during uploads */
+    // Disable all if no event selected
+    const disabled = uploading || !eventId;
+    const hasAlbum = !!album;
+
     if (inFlight.current) {
         window.onbeforeunload = () => "Uploads are running. Leave?";
     } else {
         window.onbeforeunload = null;
     }
 
-    /* ───────────  main handler  ─────────── */
     const onDrop = useCallback((dropped: File[]) => {
         if (!dropped.length) return;
         setSelectedFiles(prev => [...prev, ...dropped]);
     }, []);
 
-    /* remove file from selection */
     const removeFile = (name: string) => {
         setSelectedFiles(files => files.filter(f => f.name !== name));
     };
 
-    /* main upload handler (on Publish) */
     const handlePublish = async () => {
-        if (!albumName.trim()) {
+        if (!eventId) return;
+        if (!hasAlbum && !albumName.trim()) {
             toast.error("Type an album name first.");
             return;
         }
@@ -50,19 +52,17 @@ const AlbumUploader: FC<Props> = ({ eventId }) => {
         setUploading(true);
         inFlight.current = true;
         setProgress({});
-        const tId = toast.loading("Creating album…");
+        let albumId = album?.id;
+        let tId: string | undefined;
         try {
-            /* #1  Create album */
-            const { id: albumId } = await createAlbum(albumName);
-            toast.success(`Album #${albumId} created`, { id: tId });
-
-            /* convert all to webp (keeps order) */
+            if (!albumId) {
+                tId = toast.loading("Creating album…");
+                const created = await createAlbum(albumName);
+                albumId = created.id;
+                toast.success(`Album #${albumId} created`, { id: tId });
+            }
             const webpFiles = await Promise.all(selectedFiles.map(toWebp));
-
-            /* #2  Presign */
             const presigned = await presignBatch(webpFiles.map(f => f.name));
-
-            /* #3  PUT uploads + metadata, preserving drop order */
             await Promise.all(
                 webpFiles.map((file, idx) => {
                     const { presignedUrl, viewUrl, objectKey } = presigned[idx];
@@ -82,7 +82,7 @@ const AlbumUploader: FC<Props> = ({ eventId }) => {
                         saveImage({
                             image_id: objectKey,
                             path: viewUrl,
-                            album_id: albumId,
+                            album_id: albumId!,
                             order: idx + 1
                         }).then(() => toast.success(`✔ ${file.name}`))
                     );
@@ -99,32 +99,38 @@ const AlbumUploader: FC<Props> = ({ eventId }) => {
         }
     };
 
-    /* dropzone */
     const { getRootProps, getInputProps, isDragActive } =
-        useDropzone({ onDrop, disabled: uploading });
+        useDropzone({ onDrop, disabled });
 
-    /* render */
     return (
         <section className="space-y-4">
-            <input
-                className="border rounded p-2 w-full"
-                placeholder="Album name…"
-                value={albumName}
-                onChange={e => setAlbumName(e.target.value)}
-                disabled={uploading}
-            />
-
+            {!eventId && <div className="text-gray-500">Select an event to upload an album.</div>}
+            {hasAlbum && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded">
+                    <div className="font-bold">Album already exists for this event:</div>
+                    <div>Name: {album.name}</div>
+                    <div>Created: {new Date(album.createdAt).toLocaleString()}</div>
+                    {/* Optionally list images, etc. */}
+                </div>
+            )}
+            {!hasAlbum && (
+                <input
+                    className="border rounded p-2 w-full"
+                    placeholder="Album name…"
+                    value={albumName}
+                    onChange={e => setAlbumName(e.target.value)}
+                    disabled={disabled}
+                />
+            )}
             <div
                 {...getRootProps()}
-                className={`p-10 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                className={`p-10 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
             >
                 <input {...getInputProps()} />
                 {isDragActive
                     ? "Drop photos here…"
                     : "Drag & drop or click to select photos"}
             </div>
-
-            {/* Preview selected files */}
             {selectedFiles.length > 0 && (
                 <div className="space-y-2">
                     {selectedFiles.map(file => (
@@ -134,7 +140,7 @@ const AlbumUploader: FC<Props> = ({ eventId }) => {
                                 type="button"
                                 className="text-red-500 text-xs"
                                 onClick={() => removeFile(file.name)}
-                                disabled={uploading}
+                                disabled={disabled}
                             >
                                 Remove
                             </button>
@@ -142,8 +148,6 @@ const AlbumUploader: FC<Props> = ({ eventId }) => {
                     ))}
                 </div>
             )}
-
-            {/* Progress */}
             {Object.keys(progress).length > 0 && (
                 <div>
                     {Object.entries(progress).map(([name, pct]) => (
@@ -158,13 +162,12 @@ const AlbumUploader: FC<Props> = ({ eventId }) => {
                     </p>
                 </div>
             )}
-
             <button
                 className="bg-blue-600 text-white px-6 py-2 rounded mt-4 disabled:opacity-50"
                 onClick={handlePublish}
-                disabled={uploading || !albumName.trim() || selectedFiles.length === 0}
+                disabled={disabled || (!hasAlbum && !albumName.trim()) || selectedFiles.length === 0}
             >
-                {uploading ? "Publishing…" : "Publish"}
+                {uploading ? "Publishing…" : hasAlbum ? "Upload to Album" : "Publish"}
             </button>
         </section>
     );

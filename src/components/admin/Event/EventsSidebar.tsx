@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { getAllEvents } from "@app_api/Event.API";
 import type { EventDto } from "@app_interfaces/Event/EventDto";
 
-const EventsSidebar = () => {
+interface EventsSidebarProps {
+  selectedId: number | null;
+  onSelect: (id: number) => void;
+}
+
+const EventsSidebar = ({ selectedId, onSelect }: EventsSidebarProps) => {
   const [events, setEvents] = useState<EventDto[]>([]);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   useEffect(() => {
     getAllEvents().then(setEvents).catch(() => setEvents([]));
@@ -18,7 +22,7 @@ const EventsSidebar = () => {
         {events.map(ev => (
           <div
             key={ev.id}
-            onClick={() => setSelectedId(ev.id)}
+            onClick={() => onSelect(ev.id)}
             style={{
               padding: '1rem',
               border: '1px solid #ccc',

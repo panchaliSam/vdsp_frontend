@@ -2,7 +2,7 @@ import axiosInstance from "./AxiosInstance";
 
 /** DTO returned by POST /api/albums */
 export interface AlbumDto {
-    id: number;
+    event_id: number;
     name: string;
     coverPhoto: string | null;
     images: unknown[] | null;
@@ -11,15 +11,15 @@ export interface AlbumDto {
 }
 
 /** Create a new album */
-export const createAlbum = async (name: string): Promise<AlbumDto> => {
-    const { data } = await axiosInstance.post<AlbumDto>("/albums", { name });
+export const createAlbum = async (name: string, event_id: number): Promise<AlbumDto> => {
+    const { data } = await axiosInstance.post<AlbumDto>("/albums", { "eventId": event_id, "name": name  });
     return data;
 };
 
 /** Get album by event ID */
 export const getAlbumByEventId = async (eventId: number): Promise<AlbumDto | null> => {
     try {
-        const { data } = await axiosInstance.get(`/events/${eventId}/album`);
+        const { data } = await axiosInstance.get(`/albums/event/${eventId}`);
         return data;
     } catch (err) {
         // If not found, return null

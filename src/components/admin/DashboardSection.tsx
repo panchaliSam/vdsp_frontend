@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
@@ -31,8 +31,10 @@ import DashboardStats from "@app_components/admin/DashboardStat/DashboardStats";
 import AddHoliday from "@app_components/admin/Holiday/AddHoliday";
 import UserProfileUpdate from "@app_components/admin/UserProfile/UserProfileUpdate"
 import { getUserIdFromToken } from "@app_api/helper/getUserIdFromToken";
-import AlbumUploader from "@app_components/AlbumUploader";
-import EventsSidebar from "@app_components/admin/Event/EventsSidebar";
+import AlbumUploader from "../AlbumUploader";
+import EventsSidebar from "./Event/EventsSidebar";
+import { getAlbumByEventId } from "@app_api/AlbumApi";
+import type { AlbumDto } from "@app_api/AlbumApi";
 
 const demoTheme = createTheme({
   palette: {
@@ -170,6 +172,26 @@ export default function DashboardLayoutBasic(props: any) {
   const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
 
+  // --- Album & Event selection state ---
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [album, setAlbum] = useState<AlbumDto | null>(null);
+  const [albumLoading, setAlbumLoading] = useState(false);
+  const [albumError, setAlbumError] = useState<string | null>(null);
+
+  // Fetch album when event changes
+  useEffect(() => {
+    if (selectedEventId) {
+      setAlbumLoading(true);
+      setAlbumError(null);
+      getAlbumByEventId(selectedEventId)
+        .then(setAlbum)
+        .catch(() => setAlbumError("Failed to load album."))
+        .finally(() => setAlbumLoading(false));
+    } else {
+      setAlbum(null);
+    }
+  }, [selectedEventId]);
+
   const renderContent = () => {
     const userId = getUserIdFromToken();
 
@@ -204,10 +226,12 @@ export default function DashboardLayoutBasic(props: any) {
         return (
           <div style={{ display: 'flex', height: '100%', minHeight: 600 }}>
             <div style={{ flex: 2, padding: '2rem' }}>
-              <AlbumUploader eventId={1} />
+              <AlbumUploader eventId={selectedEventId} album={album} />
+              {albumLoading && <div>Loading album…</div>}
+              {albumError && <div style={{ color: 'red' }}>{albumError}</div>}
             </div>
             <div style={{ flex: 1, borderLeft: '2px solid #eee', padding: '2rem', background: '#fafafa' }}>
-              <EventsSidebar />
+              <EventsSidebar selectedId={selectedEventId} onSelect={setSelectedEventId} />
             </div>
           </div>
         );
