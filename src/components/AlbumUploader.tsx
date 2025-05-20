@@ -69,7 +69,6 @@ const AlbumUploader: FC<Props> = ({ eventId }) => {
                     return axios.put(presignedUrl, file, {
                         headers: {
                             "Content-Type": file.type,
-                            "X-Amz-SignedHeaders":"localhost",
                             "x-amz-acl": "public-read"
                         },
                         onUploadProgress: e =>
