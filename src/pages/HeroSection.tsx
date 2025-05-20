@@ -11,10 +11,10 @@ const kineticTagline = [
 
 // Use Picsum for all showcase images as mock
 const categories = [
-  { id: 1, title: 'Wedding Bliss', img: 'https://picsum.photos/seed/wedding/800/450' },
-  { id: 2, title: 'Engagement', img: 'https://picsum.photos/seed/engagement/800/450' },
-  { id: 3, title: 'Birthday Bash', img: 'https://picsum.photos/seed/birthday/800/450' },
-  { id: 4, title: 'Graduation Day', img: 'https://picsum.photos/seed/graduation/800/450' },
+  { id: 1, title: 'Wedding Bliss', img: 'https://mpcs.sgp1.cdn.digitaloceanspaces.com/wedding.jpg' },
+  { id: 2, title: 'Engagement', img: 'https://mpcs.sgp1.cdn.digitaloceanspaces.com/engagement.jpg' },
+  { id: 3, title: 'Birthday Bash', img: 'https://mpcs.sgp1.cdn.digitaloceanspaces.com/birthday.jpg' },
+  { id: 4, title: 'Graduation Day', img: 'https://mpcs.sgp1.cdn.digitaloceanspaces.com/graduation.jpg' },
 ];
 
 const HeroSection = () => {
