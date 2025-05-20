@@ -230,7 +230,7 @@ export default function DashboardLayoutBasic(props: any) {
               {albumLoading && <div>Loading album…</div>}
               {albumError && <div style={{ color: 'red' }}>{albumError}</div>}
             </div>
-            <div style={{ flex: 1, borderLeft: '2px solid #eee', padding: '2rem', background: '#fafafa' }}>
+            <div style={{ flex: 1, borderLeft: '2px solid rgb(35, 35, 35)', padding: '2rem', background: 'solid rgb(47, 47, 47)' }}>
               <EventsSidebar selectedId={selectedEventId} onSelect={setSelectedEventId} />
             </div>
           </div>
