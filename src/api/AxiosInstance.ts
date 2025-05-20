@@ -42,6 +42,12 @@ axiosInstance.interceptors.response.use(
       return response;
     }
 
+    // Skip Ignored Responses
+    // 204 No Content
+    if (response.status === 204) {
+      return response;
+    }
+
     if (response.config.url?.includes("mpcs.sgp1.cdn.digitaloceanspaces.com")) {
       return response ;
     }
