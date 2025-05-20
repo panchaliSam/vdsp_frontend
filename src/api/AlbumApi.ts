@@ -2,6 +2,7 @@ import axiosInstance from "./AxiosInstance";
 
 /** DTO returned by POST /api/albums */
 export interface AlbumDto {
+    id: number;
     event_id: number;
     name: string;
     coverPhoto: string | null;
@@ -25,4 +26,9 @@ export const getAlbumByEventId = async (eventId: number): Promise<AlbumDto | nul
         // If not found, return null
         return null;
     }
+};
+
+/** Update album cover photo */
+export const updateAlbumCoverPhoto = async (albumId: number, coverPhoto: string): Promise<void> => {
+    await axiosInstance.patch(`/albums/${albumId}`, { coverPhoto });
 }; 

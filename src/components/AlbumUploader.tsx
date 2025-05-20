@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-import { createAlbum } from "@app_api/AlbumApi";
+import { createAlbum, updateAlbumCoverPhoto } from "@app_api/AlbumApi";
 import type { AlbumDto } from "@app_api/AlbumApi";
 import { presignBatch, saveImage } from "@app_api/UploadApi";
 import { toWebp } from "../utils/image";
@@ -57,7 +57,7 @@ const AlbumUploader: FC<Props> = ({ eventId, album }) => {
         try {
             if (!albumId) {
                 tId = toast.loading("Creating album…");
-                const created = await createAlbum(albumName);
+                const created = await createAlbum(albumName, eventId);
                 albumId = created.id;
                 toast.success(`Album #${albumId} created`, { id: tId });
             }
@@ -78,14 +78,22 @@ const AlbumUploader: FC<Props> = ({ eventId, album }) => {
                                     (e.loaded / (e.total ?? 1)) * 100
                                 )
                             }))
-                    }).then(() =>
-                        saveImage({
+                    }).then(async () => {
+                        await saveImage({
                             image_id: objectKey,
                             path: viewUrl,
                             album_id: albumId!,
                             order: idx + 1
-                        }).then(() => toast.success(`✔ ${file.name}`))
-                    );
+                        });
+                        if (idx === 0) {
+                            try {
+                                await updateAlbumCoverPhoto(albumId!, viewUrl);
+                            } catch (err) {
+                                toast.error("Failed to update album cover photo");
+                            }
+                        }
+                        toast.success(`✔ ${file.name}`)
+                    });
                 })
             );
             toast.success("All uploads finished 🎉");
