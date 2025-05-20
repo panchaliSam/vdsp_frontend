@@ -77,18 +77,6 @@ export async function fetchGalleryImages(): Promise<GalleryImage[]> {
   ];
 }
 
-// Simulate uploading an image to an API
-export async function uploadGalleryImage(file: File): Promise<GalleryImage> {
-  await new Promise((res) => setTimeout(res, 700));
-  // Use a random picsum image for the uploaded mock
-  const randomId = Math.floor(Math.random() * 1000);
-  return {
-    id: Date.now(),
-    url: `https://picsum.photos/id/${randomId}/400/300`,
-    title: file.name,
-  };
-}
-
 export async function* fetchGalleryImagesProgressive(): AsyncGenerator<GalleryImage, void, unknown> {
   const images = [
     { id: 1, url: 'https://picsum.photos/id/1015/800/450', title: 'Mountain Lake' },
