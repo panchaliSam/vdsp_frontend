@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { validateEmail } from "@app_helper/validations/emailValidation";
 import { capitalizeName } from "@app_helper/validations/capitalizeName";
 import { validatePhoneNumber } from "@app_helper/validations/phoneNumberValidation";
@@ -25,6 +25,8 @@ const PayHereForm = () => {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -54,6 +56,43 @@ const PayHereForm = () => {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let valid = true;
+    const newErrors: { [key: string]: string | null } = {};
+    if (!firstName.trim()) {
+      newErrors.firstName = "First name is required.";
+      valid = false;
+    }
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last name is required.";
+      valid = false;
+    }
+    const emailError = validateEmail(email);
+    if (emailError) {
+      newErrors.email = emailError;
+      valid = false;
+    }
+    const phoneError = validatePhoneNumber(phone);
+    if (phoneError) {
+      newErrors.phone = phoneError;
+      valid = false;
+    }
+    const addressError = validateAddress(address);
+    if (addressError) {
+      newErrors.address = addressError;
+      valid = false;
+    }
+    if (!city.trim()) {
+      newErrors.city = "City is required.";
+      valid = false;
+    }
+    setErrors(newErrors);
+    if (valid && formRef.current) {
+      formRef.current.submit();
+    }
+  };
+
   return (
     <>
           <div className="fixed inset-0 -z-10 w-full h-full"
@@ -80,6 +119,8 @@ const PayHereForm = () => {
           method="POST"
           action="https://sandbox.payhere.lk/pay/checkout"
           className="w-full text-white"
+          ref={formRef}
+          onSubmit={handleSubmit}
         >
           {/* Merchant Details (hidden) */}
           <div className="hidden">
