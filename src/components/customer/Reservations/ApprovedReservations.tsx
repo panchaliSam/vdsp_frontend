@@ -222,7 +222,7 @@ const ApprovedReservations: React.FC = () => {
                       </IconButton>
                     </TableCell>
                     <TableCell>
-                      { console.log(paymentStatuses[reservation.reservationId]) }
+
                       {paymentStatuses[reservation.reservationId] == "SUCCESS" ? (
                         <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#22c55e', fontWeight: 600 }}>
                           <CheckCircleIcon fontSize="small" style={{ color: '#22c55e' }} />
