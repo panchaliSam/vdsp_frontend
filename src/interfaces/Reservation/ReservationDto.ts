@@ -1,3 +1,5 @@
+import type { PaymentStatus } from "@app_interfaces/Payment/PaymentHistoryDto";
+
 export interface ReservationDto {
   id?: number;
   eventType: EventType;
@@ -10,6 +12,7 @@ export interface ReservationDto {
   priceAmount?: string;
   customerName?: string;
   sessionType?: SessionType;
+  paymentStatus?: PaymentStatus;
 }
 
 export type EventType = "WEDDING" | "BIRTHDAY" | "GRADUATION" | "CORPORATE";

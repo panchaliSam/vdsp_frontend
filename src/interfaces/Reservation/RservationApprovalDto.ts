@@ -1,3 +1,5 @@
+import type { PaymentStatus } from "@app_interfaces/Payment/PaymentHistoryDto";
+
 export interface ReservationApprovalDto {
   id: number;
   approvedAt: string | null;
@@ -11,6 +13,7 @@ export interface ReservationApprovalDto {
   eventStartTime: string;
   eventEndTime: string;
   sessionType: SessionType;
+  paymentStatus: PaymentStatus;
 }
 
 export type ApprovalStatus = "APPROVED" | "DISAPPROVED" | "PENDING";

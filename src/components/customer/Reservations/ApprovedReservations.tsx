@@ -28,6 +28,8 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import type { PaymentStatus } from "@app_interfaces/Payment/PaymentHistoryDto";
 
 const ApprovedReservations: React.FC = () => {
   const [reservations, setReservations] = useState<ReservationApprovalDto[]>(
@@ -37,6 +39,7 @@ const ApprovedReservations: React.FC = () => {
     useState<ReservationDto | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [paymentStatuses, setPaymentStatuses] = useState<{ [reservationId: number]: string }>({});
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -48,6 +51,20 @@ const ApprovedReservations: React.FC = () => {
       try {
         const data = await getApprovedReservations();
         setReservations(data ?? []);
+        // Fetch payment statuses for all reservations
+        const statuses: { [reservationId: number]: string } = {};
+        await Promise.all(
+          (data ?? []).map(async (reservation) => {
+            try {
+              const details = await getReservationById(reservation.reservationId);
+              if (reservation && reservation.paymentStatus) {
+                statuses[reservation.reservationId] = reservation.paymentStatus;
+              }
+            } catch {}
+          })
+        );
+        console.log("Statuses", statuses);
+        setPaymentStatuses(statuses);
       } catch (err) {
         console.error(err);
         setError(
@@ -205,42 +222,50 @@ const ApprovedReservations: React.FC = () => {
                       </IconButton>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        onClick={() =>
-                          handlePaymentProceedClick(reservation.reservationId)
-                        }
-                        variant="outlined"
-                        disabled={reservation.status !== "APPROVED"}
-                        sx={{
-                          borderRadius: "20px",
-                          padding: "5px 15px",
-                          textTransform: "none",
-                          bgcolor:
-                            reservation.status === "APPROVED"
-                              ? "white"
-                              : "gray",
-                          color:
-                            reservation.status === "APPROVED"
-                              ? "black"
-                              : "white",
-                          border:
-                            reservation.status === "APPROVED"
-                              ? "1px solid black"
-                              : "1px solid gray",
-                          "&:hover": {
+                      { console.log(paymentStatuses[reservation.reservationId]) }
+                      {paymentStatuses[reservation.reservationId] == "SUCCESS" ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#22c55e', fontWeight: 600 }}>
+                          <CheckCircleIcon fontSize="small" style={{ color: '#22c55e' }} />
+                          Completed
+                        </span>
+                      ) : (
+                        <Button
+                          onClick={() =>
+                            handlePaymentProceedClick(reservation.reservationId)
+                          }
+                          variant="outlined"
+                          disabled={reservation.status !== "APPROVED"}
+                          sx={{
+                            borderRadius: "20px",
+                            padding: "5px 15px",
+                            textTransform: "none",
                             bgcolor:
                               reservation.status === "APPROVED"
-                                ? "black"
+                                ? "white"
                                 : "gray",
                             color:
                               reservation.status === "APPROVED"
-                                ? "white"
+                                ? "black"
                                 : "white",
-                          },
-                        }}
-                      >
-                        Proceed
-                      </Button>
+                            border:
+                              reservation.status === "APPROVED"
+                                ? "1px solid black"
+                                : "1px solid gray",
+                            "&:hover": {
+                              bgcolor:
+                                reservation.status === "APPROVED"
+                                  ? "black"
+                                  : "gray",
+                              color:
+                                reservation.status === "APPROVED"
+                                  ? "white"
+                                  : "white",
+                            },
+                          }}
+                        >
+                          Proceed
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
