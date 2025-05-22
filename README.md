@@ -85,7 +85,6 @@ LensLex is a full-stack event management solution tailored for photography studi
 <details>
 <summary>Click to expand</summary>
 
-
 vdsp_spring_backend/
 ├── .gradle/
 ├── .idea/
@@ -116,7 +115,7 @@ vdsp_spring_backend/
 ├── .gitignore
 ├── build.gradle
 ├── gradlew
-├── gradlew.bat
+└── gradlew.bat
 
 </details>
 
